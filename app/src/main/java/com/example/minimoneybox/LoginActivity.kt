@@ -1,19 +1,24 @@
 package com.example.minimoneybox
 
+import android.animation.ValueAnimator
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.design.widget.TextInputLayout
 import android.text.TextUtils
+import android.util.Log
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import com.airbnb.lottie.LottieAnimationView
+import com.airbnb.lottie.LottieDrawable
+import kotlinx.android.synthetic.main.activity_login.*
 import java.util.regex.Pattern
 
 /**
  * A login screen that offers login via email/password.
  */
 class LoginActivity : AppCompatActivity() {
+
 
     lateinit var btn_sign_in : Button
     lateinit var til_email : TextInputLayout
@@ -23,6 +28,8 @@ class LoginActivity : AppCompatActivity() {
     lateinit var til_name : TextInputLayout
     lateinit var et_name : EditText
     lateinit var pigAnimation : LottieAnimationView
+
+    val ANIMATED_FRACTION_MAX_CONSTANT = 1.0;
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -96,8 +103,25 @@ class LoginActivity : AppCompatActivity() {
         return allValid
     }
 
+    /* Creates an animation listener that checks if the pig has showed up. If it has, let the money
+     box pat it's pig forever until the activity restarts */
+    private fun setupAnimationListener() {
+        pigAnimation.addAnimatorUpdateListener({ animation ->
+            if (animation.animatedFraction.compareTo(ANIMATED_FRACTION_MAX_CONSTANT) == 0) {
+                pigAnimation.setMinAndMaxFrame(131, 158)
+                pigAnimation.repeatCount = LottieDrawable.INFINITE;
+                pigAnimation.repeatMode = LottieDrawable.RESTART;
+                pigAnimation.playAnimation()
+            }
+        })
+    }
+
+
+
     private fun setupAnimation() {
+        pigAnimation.setMaxFrame(109) // Stop the animation when the pig shows up.
         pigAnimation.playAnimation()
+        setupAnimationListener() // Respond to pig showing up, create next animation after.
     }
 
     companion object {
