@@ -102,7 +102,7 @@ class LoginActivity : AppCompatActivity() {
 
     companion object {
         val EMAIL_REGEX = "[^@]+@[^.]+\\..+"
-        val NAME_REGEX = "[a-zA-Z]{0,30}"
+        val NAME_REGEX = "(.*?){0,30}"
         val PASSWORD_REGEX = "^(?=.*[0-9])(?=.*[a-zA-Z]).{10,50}$"
         val firstAnim = 0 to 109
         val secondAnim = 131 to 158
