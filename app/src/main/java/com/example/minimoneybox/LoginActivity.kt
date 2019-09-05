@@ -1,6 +1,5 @@
 package com.example.minimoneybox
 
-import android.animation.ValueAnimator
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.design.widget.TextInputLayout
@@ -11,8 +10,18 @@ import android.widget.EditText
 import android.widget.Toast
 import com.airbnb.lottie.LottieAnimationView
 import com.airbnb.lottie.LottieDrawable
-import kotlinx.android.synthetic.main.activity_login.*
+import com.example.minimoneybox.Interfaces.MoneyBoxService
+import com.example.minimoneybox.Models.LoginRequest
+import com.example.minimoneybox.Models.LoginResponse
+import okhttp3.Interceptor
+import okhttp3.OkHttpClient
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 import java.util.regex.Pattern
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
+
 
 /**
  * A login screen that offers login via email/password.
@@ -29,6 +38,8 @@ class LoginActivity : AppCompatActivity() {
     lateinit var et_name : EditText
     lateinit var pigAnimation : LottieAnimationView
 
+    val service : MoneyBoxService? = null
+
     val ANIMATED_FRACTION_MAX_CONSTANT = 1.0;
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -37,10 +48,55 @@ class LoginActivity : AppCompatActivity() {
         setupViews()
     }
 
+
+
     override fun onStart() {
         super.onStart()
         setupAnimation()
     }
+
+    class HeaderInterceptor : Interceptor {
+        override fun intercept(chain: Interceptor.Chain) = chain.run {
+            proceed(
+                request()
+                    .newBuilder()
+                    .addHeader("AppId", "3a97b932a9d449c981b595")
+                    .addHeader("Content-Type", "application/json")
+                    .addHeader("appVersion", "5.10.0")
+                    .addHeader("apiVersion", "3.0.0")
+                    .build()
+            )
+        }
+    }
+
+    private fun loginUser() {
+        val client : OkHttpClient = OkHttpClient.Builder().addNetworkInterceptor(HeaderInterceptor()).build();
+        val retrofit = Retrofit.Builder()
+            .baseUrl(LoginActivity.BASE_URL)
+            .addConverterFactory(GsonConverterFactory.create())
+            .client(client)
+            .build()
+        val service = retrofit.create<MoneyBoxService>(MoneyBoxService::class.java)
+
+        val loginRequest : LoginRequest = LoginRequest()
+        loginRequest.email = LoginActivity.TEMP_EMAIL
+        loginRequest.password = LoginActivity.TEMP_PASSWORD
+        loginRequest.idfa = LoginActivity.TEMP_IDFA
+
+        val call = service.loginUser(loginRequest)
+        call.enqueue(object : Callback<LoginRequest> {
+            override fun onFailure(call: Call<LoginRequest>?, t: Throwable?) {
+                Log.d(LoginActivity.TAG,"login failure")
+            }
+
+            override fun onResponse(call: Call<LoginRequest>?, response: Response<LoginRequest>?) {
+                Log.d(LoginActivity.TAG,"login success")
+            }
+        })
+    }
+
+
+
 
     private fun setupViews() {
         btn_sign_in = findViewById(R.id.btn_sign_in)
@@ -53,10 +109,11 @@ class LoginActivity : AppCompatActivity() {
         pigAnimation = findViewById(R.id.animation)
 
         btn_sign_in.setOnClickListener {
-            if (allFieldsValid()) {
-                checkAndResetErrorWarnings()
+           // if (allFieldsValid()) {
+            //    checkAndResetErrorWarnings()
                 Toast.makeText(this, R.string.input_valid, Toast.LENGTH_LONG).show()
-            }
+                loginUser()
+          //  }
         }
 
 
@@ -130,5 +187,19 @@ class LoginActivity : AppCompatActivity() {
         val PASSWORD_REGEX = "^(?=.*[0-9])(?=.*[a-zA-Z]).{10,50}$"
         val firstAnim = 0 to 109
         val secondAnim = 131 to 158
+
+        val BASE_URL : String = "https://api-test01.moneyboxapp.com/"
+        val APP_ID : String = "AppId: 3a97b932a9d449c981b595"
+        val CONTENT_TYPE : String = "application/json"
+        val APP_VERSION : String = "5.10.0"
+        val API_VERSION : String = "3.0.0"
+
+        val TEMP_EMAIL : String = "androidtest@moneyboxapp.com"
+        val TEMP_PASSWORD : String = "P455word12"
+        val TEMP_IDFA : String = "YEEESSS"
+        val TAG = "LoginActivity"
+
     }
 }
+
+
