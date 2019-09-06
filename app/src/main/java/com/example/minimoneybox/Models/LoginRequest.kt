@@ -2,15 +2,8 @@ package com.example.minimoneybox.Models
 
 import com.google.gson.annotations.SerializedName
 
-class LoginRequest() {
-
-    @SerializedName("Email")
-    var email: String? = null
-
-    @SerializedName("Password")
-    var password: String? = null
-
-    @SerializedName("Idfa")
-    var idfa: String? = null
-
-}
+data class LoginRequest (
+    @SerializedName("Email") var email: String,
+    @SerializedName("Password") var password: String,
+    @SerializedName("Idfa") var idfa: String
+)

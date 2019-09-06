@@ -17,6 +17,18 @@ import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import android.os.StrictMode
+import android.widget.Toast
+import com.example.minimoneybox.LoginActivity.Companion.TAG
+import com.example.minimoneybox.Models.LoginResponse
+import io.reactivex.Observable
+import io.reactivex.Observer
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.disposables.Disposable
+import io.reactivex.schedulers.Schedulers
+import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
+
 
 /**
  * Instrumented test, which will execute on an Android device.
@@ -32,48 +44,23 @@ class ExampleInstrumentedTest {
         assertEquals("com.example.minimoneybox", appContext.packageName)
     }
 
-    class HeaderInterceptor : Interceptor {
-        override fun intercept(chain: Interceptor.Chain) = chain.run {
-            proceed(
-                request()
-                    .newBuilder()
-                    .addHeader("AppId", "3a97b932a9d449c981b595")
-                    .addHeader("Content-Type", "application/json")
-                    .addHeader("appVersion", "5.10.0")
-                    .addHeader("apiVersion", "3.0.0")
-                    .build()
-            )
-        }
-    }
-
-
     @Test
     fun loginUser() {
-        val client : OkHttpClient = OkHttpClient.Builder().addNetworkInterceptor(HeaderInterceptor()).build();
         val retrofit = Retrofit.Builder()
             .baseUrl(LoginActivity.BASE_URL)
+            .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
             .addConverterFactory(GsonConverterFactory.create())
-            .client(client)
             .build()
-        val service = retrofit.create<MoneyBoxService>(MoneyBoxService::class.java)
+        val service = retrofit.create(MoneyBoxService::class.java)
 
-        val loginRequest : LoginRequest = LoginRequest()
-        loginRequest.email = LoginActivity.TEMP_EMAIL
-        loginRequest.password = LoginActivity.TEMP_PASSWORD
-        loginRequest.idfa = LoginActivity.TEMP_IDFA
-
-        val call = service.loginUser(loginRequest)
-        call.enqueue(object : Callback<LoginRequest> {
-            override fun onFailure(call: Call<LoginRequest>?, t: Throwable?) {
-                Log.d(LoginActivity.TAG,"login failure")
-            }
-
-            override fun onResponse(call: Call<LoginRequest>?, response: Response<LoginRequest>?) {
-                Log.d(LoginActivity.TAG,"login success")
-                assertFalse(response == null)
-                assertTrue(response?.code() == 200)
-            }
-        })
+        val observable = service.loginUser(LoginRequest(LoginActivity.TEMP_EMAIL,
+            LoginActivity.TEMP_PASSWORD, LoginActivity.TEMP_IDFA))
+        observable.subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({ loginResponse ->
+                assertTrue(loginResponse?.code() == 200)
+            }, { error ->
+                fail()
+            })
     }
-
 }
