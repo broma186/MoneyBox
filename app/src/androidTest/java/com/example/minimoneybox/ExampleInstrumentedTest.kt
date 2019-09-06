@@ -2,30 +2,16 @@ package com.example.minimoneybox
 
 import android.support.test.InstrumentationRegistry
 import android.support.test.runner.AndroidJUnit4
-import android.util.Log
 import com.example.minimoneybox.Interfaces.MoneyBoxService
-import com.example.minimoneybox.Models.LoginRequest
-import okhttp3.Interceptor
-import okhttp3.OkHttpClient
+import com.example.minimoneybox.Request.LoginRequest
 
 import org.junit.Test
 import org.junit.runner.RunWith
 
 import org.junit.Assert.*
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import android.os.StrictMode
-import android.widget.Toast
-import com.example.minimoneybox.LoginActivity.Companion.TAG
-import com.example.minimoneybox.Models.LoginResponse
-import io.reactivex.Observable
-import io.reactivex.Observer
 import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 

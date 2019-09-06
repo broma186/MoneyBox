@@ -1,5 +1,6 @@
-package com.example.minimoneybox.Models
+package com.example.minimoneybox.Request
 
+import com.example.minimoneybox.response.LoginResponse
 import com.google.gson.annotations.SerializedName
 import io.reactivex.Observable
 import retrofit2.Response

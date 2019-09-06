@@ -1,4 +1,4 @@
-package com.example.minimoneybox.Models
+package com.example.minimoneybox.response
 
 import com.google.gson.annotations.SerializedName
 

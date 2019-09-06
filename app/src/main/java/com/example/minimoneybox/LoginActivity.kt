@@ -15,11 +15,14 @@ import com.example.minimoneybox.Constants.ANIMATED_FRACTION_MAX_CONSTANT
 import com.example.minimoneybox.Constants.EMAIL_REGEX
 import com.example.minimoneybox.Constants.NAME_REGEX
 import com.example.minimoneybox.Constants.PASSWORD_REGEX
-import com.example.minimoneybox.Models.LoginRequest
+import com.example.minimoneybox.Request.LoginRequest
 import com.example.minimoneybox.api.MoneyBoxApiService
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
+import okhttp3.Response
+import okhttp3.ResponseBody
 import java.util.regex.Pattern
+
 
 
 /**
@@ -65,13 +68,41 @@ class LoginActivity : AppCompatActivity() {
                 Log.d(TAG, "login response recieved with code: " + loginResponse?.code())
                 if (loginResponse?.code() == 200) {
                     //TODO: If bearer token is different, store and use that instead.
-                    goToUserAccounts(loginRequest)
+                    val bearerToken : String? = loginResponse?.body()?.loginSession?.bearerToken
+                    if (bearerToken != null) {
+                        loadInvestorData(bearerToken, loginRequest)
+                    } else {
+                        //TODO display toast saying user failed to login, They must input again.
+                    }
                 }
             }, { error ->
                 Log.d(LoginActivity.TAG,"login failure: " + error?.message)
             })
 
     }
+
+    private fun loadInvestorData(authToken : String?, loginRequest: LoginRequest) {
+        val map : HashMap<String, String> = HashMap()
+        map.put("Authorization", "Bearer " + authToken)
+        map.put("AppId", "3a97b932a9d449c981b595")
+        map.put("Content-Type", "application/json")
+        map.put("appVersion",  "5.10.0")
+        map.put("apiVersion", "3.0.0")
+
+        val observable = MoneyBoxApiService.investorApiCall(authToken).getInvestorProducts(map)
+        observable.subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({response: ResponseBody? ->
+                /*if (response?.code() == 200) {
+                    goToUserAccounts(loginRequest)
+                }*/
+              
+            }, { error ->
+            Log.d(LoginActivity.TAG,"login failure: " + error?.message)
+        })
+
+    }
+
 
     private fun goToUserAccounts(loginRequest: LoginRequest) {
         val intent = Intent(this, UserAccountsActivity::class.java)

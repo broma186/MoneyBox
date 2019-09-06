@@ -24,7 +24,7 @@ class UserAccountsActivity : AppCompatActivity() {
         var loginIntentExtras : Bundle = intent.extras;
         if (loginIntentExtras?.containsKey(FULL_NAME_KEY)!!) {
             helloFullName.visibility = View.VISIBLE
-            helloFullName.setText("Hello " + loginIntentExtras.getString(FULL_NAME_KEY))
+            helloFullName.setText("Hello " + loginIntentExtras.getString(FULL_NAME_KEY) + "!")
         }
     }
     
