@@ -2,18 +2,24 @@ package com.example.minimoneybox
 
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
+import android.support.v7.widget.LinearLayoutManager
+import android.support.v7.widget.RecyclerView
 import android.view.View
 import android.widget.Button
 import android.widget.TextView
+import com.example.minimoneybox.Adaptors.AccountsListAdapter
 import com.example.minimoneybox.Constants.FULL_NAME_KEY
 import com.example.minimoneybox.Constants.PLAN_VALUE_KEY
 import org.w3c.dom.Text
 
 class UserAccountsActivity : AppCompatActivity() {
 
-    lateinit var helloFullName : TextView
-    lateinit var planValueTitle : TextView
-    lateinit var planValueText : TextView
+    private lateinit var helloFullName : TextView
+    private lateinit var planValueTitle : TextView
+    private lateinit var planValueText : TextView
+    private lateinit var accountsRecyclerView : RecyclerView
+    private lateinit var accountsViewAdapter: RecyclerView.Adapter<*>
+    private lateinit var accountsViewLayoutManager: RecyclerView.LayoutManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,6 +41,14 @@ class UserAccountsActivity : AppCompatActivity() {
             planValueText.visibility = View.VISIBLE
             planValueText.text = loginIntentExtras.getString(PLAN_VALUE_KEY)
         }
+        setupAccountsList();
     }
+
+    private fun setupAccountsList() {
+        accountsViewLayoutManager = LinearLayoutManager(this)
+        accountsViewAdapter = AccountsListAdapter(myDataset)
+    }
+
+
     
 }
