@@ -18,7 +18,6 @@ class UserAccountsActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_user_accounts)
-        setTitle(getString(R.string.user_accounts_title))
         setupViews()
     }
 
