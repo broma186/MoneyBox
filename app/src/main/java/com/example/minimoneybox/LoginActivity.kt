@@ -17,6 +17,7 @@ import com.example.minimoneybox.Constants.NAME_REGEX
 import com.example.minimoneybox.Constants.PASSWORD_REGEX
 import com.example.minimoneybox.Request.LoginRequest
 import com.example.minimoneybox.api.MoneyBoxApiService
+import com.example.minimoneybox.response.InvestorResponse
 import com.example.minimoneybox.response.LoginResponse
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
@@ -86,8 +87,8 @@ class LoginActivity : AppCompatActivity() {
         val observable = MoneyBoxApiService.investorApiCall(authToken).getInvestorProducts("Bearer " + authToken)
         observable.subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe({response ->
-                Log.d(LoginActivity.TAG,"getInvestor success, body is: " + response)
+            .subscribe({investorResponse: InvestorResponse? ->
+                Log.d(LoginActivity.TAG,"getInvestor success, first product id is: " + investorResponse?.productResponses?.get(0)?.id)
 
 
             }, { error ->

@@ -5,7 +5,7 @@ import com.google.gson.annotations.SerializedName
 data class InvestorResponse (
 
     @SerializedName("TotalPlanValue") var totalPlanValue: String? = null,
-    @SerializedName("ProductResponses") var productResponses: ProductResponse? = null
+    @SerializedName("ProductResponses") var productResponses: List<ProductResponse>? = null
 )
 
 data class ProductResponse (

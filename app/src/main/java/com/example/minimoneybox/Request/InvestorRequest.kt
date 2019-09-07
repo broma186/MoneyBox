@@ -1,5 +1,6 @@
 package com.example.minimoneybox.Request
 
+import com.example.minimoneybox.response.InvestorResponse
 import io.reactivex.Observable
 import okhttp3.Response
 import okhttp3.ResponseBody
@@ -18,5 +19,5 @@ interface  InvestorApiService {
         "apiVersion: 3.0.0"
     )
     @GET("/investorproducts")
-    fun getInvestorProducts(@Query("Authorization") authorizationKey: String) : Observable<ResponseBody>
+    fun getInvestorProducts(@Query("Authorization") authorizationKey: String) : Observable<InvestorResponse>
 }
