@@ -84,12 +84,12 @@ class LoginActivity : AppCompatActivity() {
     private fun loadInvestorData(authToken : String?, loginRequest: LoginRequest) {
 
         Log.d(LoginActivity.TAG,"about to getInvestors")
-        val observable = MoneyBoxApiService.investorApiCall(authToken).getInvestorProducts("Bearer " + authToken)
+        val observable = MoneyBoxApiService.investorApiCall().getInvestorProducts("Bearer " + authToken)
         observable.subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({investorResponse: InvestorResponse? ->
                 Log.d(LoginActivity.TAG,"getInvestor success, first product id is: " + investorResponse?.productResponses?.get(0)?.id)
-                if (investorResponse?.productResponses != null) {
+                if (investorResponse?.totalPlanValue != null) {
                     goToUserAccounts(loginRequest)
                 } else {
                     val msg = loginRequest.idfa + " has no accounts"

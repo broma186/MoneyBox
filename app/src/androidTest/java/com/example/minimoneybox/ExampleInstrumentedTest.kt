@@ -3,8 +3,10 @@ package com.example.minimoneybox
 import android.support.test.InstrumentationRegistry
 import android.support.test.runner.AndroidJUnit4
 import android.util.Log
+import android.widget.Toast
 import com.example.minimoneybox.Request.LoginRequest
 import com.example.minimoneybox.api.MoneyBoxApiService
+import com.example.minimoneybox.response.InvestorResponse
 
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -36,7 +38,7 @@ class ExampleInstrumentedTest {
         assertEquals("com.example.minimoneybox", appContext.packageName)
     }
 
-   /* @Test
+    @Test
     fun loginUser() {
         val loginRequest : LoginRequest = LoginRequest(Constants.TEMP_EMAIL,
             Constants.TEMP_PASSWORD, Constants.TEMP_IDFA)
@@ -44,53 +46,35 @@ class ExampleInstrumentedTest {
         observable.subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({ loginResponse ->
-                assertTrue(loginResponse?.code() == 200)
-                Log.d(LoginActivity.TAG, "login response recieved with code: " + loginResponse?.code())
-                if (loginResponse?.code() == 200) {
-                    val bearerToken : String? = loginResponse?.body()?.loginSession?.bearerToken
-                    if (bearerToken != null) {
-                        Log.d(LoginActivity.TAG, "loginUser bearer token is: " + bearerToken)
-                        assertTrue(bearerToken != null)
-                    }
+                val authToken : String? = loginResponse?.loginSession?.bearerToken
+                if (authToken != null) {
+                    assertTrue(authToken != null)
                 }
             }, { error ->
                 fail()
-                Log.d(LoginActivity.TAG,"login failure: " + error?.message)
             })
-    }*/
+    }
 
     @Test
     fun getInvestorProducts() {
-        val observable2 = MoneyBoxApiService.loginApiCall().loginUser(LoginRequest(Constants.TEMP_EMAIL,
-            Constants.TEMP_PASSWORD, Constants.TEMP_IDFA))
-        observable2.subscribeOn(Schedulers.io())
+        val loginRequest : LoginRequest = LoginRequest(Constants.TEMP_EMAIL,
+            Constants.TEMP_PASSWORD, Constants.TEMP_IDFA)
+        val observable = MoneyBoxApiService.loginApiCall().loginUser(loginRequest)
+        observable.subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({ loginResponse ->
-               // Log.d(LoginActivity.TAG, "login response recieved with code: " + loginResponse?.code())
-               // if (loginResponse?.code() == 200) {
-                    val bearerToken : String? = loginResponse?.body()?.loginSession?.bearerToken
-                    Log.d(LoginActivity.TAG, "loginUser bearer token is: " + bearerToken)
-                if (bearerToken != null) {
-                        val map : HashMap<String, String> = HashMap()
-                        map.put("Authorization", "Bearer " + bearerToken)
-                        map.put("AppId", "3a97b932a9d449c981b595")
-                        map.put("Content-Type", "application/json")
-                        map.put("appVersion",  "5.10.0")
-                        map.put("apiVersion", "3.0.0")
-
-                        val observable = MoneyBoxApiService.investorApiCall(bearerToken).getInvestorProducts(map)
-                        observable.subscribeOn(Schedulers.io())
-                            .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe({response: ResponseBody? ->
-                                val post = JsonObject().get(response.toString()).asJsonObject
-                                Log.d(LoginActivity.TAG,"Val of response body get investor: " + post)
-
-                            }, { error ->
-                                Log.d(LoginActivity.TAG,"get investors failure: " + error?.message)
-                                fail()
-                            })
+                val authToken : String? = loginResponse?.loginSession?.bearerToken
+                if (authToken != null) {
+                    val observable = MoneyBoxApiService.investorApiCall().getInvestorProducts("Bearer " + authToken)
+                    observable.subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe({investorResponse: InvestorResponse? ->
+                            assertTrue(investorResponse?.totalPlanValue != null)
+                        }, { error ->
+                            fail()
+                            Log.d(LoginActivity.TAG,"getinvestor failure: " + error?.message)
+                        })
                     }
-               // }
             }, { error ->
                 fail()
                 Log.d(LoginActivity.TAG,"login failure: " + error?.message)

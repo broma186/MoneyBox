@@ -30,7 +30,7 @@ object MoneyBoxApiService {
         .build()
         .create(LoginApiService::class.java)!!
 
-    fun investorApiCall(authToken : String?) = Retrofit.Builder()
+    fun investorApiCall() = Retrofit.Builder()
         .baseUrl(Constants.BASE_URL)
         .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
         .addConverterFactory(gsonConverter)

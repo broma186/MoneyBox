@@ -4,7 +4,7 @@ import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 
 data class LoginResponse (
-    @SerializedName("Session") var loginSession: LoginSession? = null
+    @SerializedName("Session") val loginSession: LoginSession? = null
 )
 
 data class LoginSession (
