@@ -3,10 +3,7 @@ package com.example.minimoneybox.Request
 import com.example.minimoneybox.response.LoginResponse
 import com.google.gson.annotations.SerializedName
 import io.reactivex.Observable
-import retrofit2.Response
-import retrofit2.http.Body
-import retrofit2.http.Headers
-import retrofit2.http.POST
+import retrofit2.http.*
 
 interface LoginApiService {
     @Headers(
@@ -16,11 +13,13 @@ interface LoginApiService {
         "apiVersion: 3.0.0"
     )
     @POST("users/login")
-    fun loginUser(@Body loginRequest: LoginRequest): Observable<Response<LoginResponse>>
+    fun loginUser(@Body loginRequest: LoginRequest): Observable<LoginResponse>
 }
 
 data class LoginRequest (
     @SerializedName("Email") var email: String,
     @SerializedName("Password") var password: String,
-    @SerializedName("Idfa") var idfa: String
+    @SerializedName("Idfa") var idfa: String,
+    @SerializedName("status") val status: Int = 0
+
 )

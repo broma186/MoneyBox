@@ -26,7 +26,7 @@ object MoneyBoxApiService {
         .baseUrl(Constants.BASE_URL)
         .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
         .addConverterFactory(gsonConverter)
-        .client(loginClient)
+        .client(mainClient)
         .build()
         .create(LoginApiService::class.java)!!
 
@@ -34,7 +34,7 @@ object MoneyBoxApiService {
         .baseUrl(Constants.BASE_URL)
         .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
         .addConverterFactory(gsonConverter)
-        .client(loginClient)
+        .client(mainClient)
         .build()
         .create(InvestorApiService::class.java)!!
 
@@ -60,7 +60,7 @@ object MoneyBoxApiService {
 
 
 
-  /*  val mainClient : OkHttpClient
+    val mainClient : OkHttpClient
         @Throws(NoSuchAlgorithmException::class, KeyManagementException::class)
         get() {
             if (mClient == null) {
@@ -69,13 +69,6 @@ object MoneyBoxApiService {
 
                 val httpBuilder = OkHttpClient.Builder()
                 httpBuilder
-                    .addInterceptor({chain ->
-                        chain.proceed(chain.request()
-                            .newBuilder()
-                            .addHeader("Authorization", "blahblah")
-                            .build())
-
-                    })
                     .connectTimeout(15, TimeUnit.SECONDS)
                     .readTimeout(20, TimeUnit.SECONDS)
                     .addInterceptor(interceptor)  /// show all JSON in logCat
@@ -83,7 +76,7 @@ object MoneyBoxApiService {
 
             }
             return mClient!!
-        }*/
+        }
 
     val gsonConverter: GsonConverterFactory
         get() {

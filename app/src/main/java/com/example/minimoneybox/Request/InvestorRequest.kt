@@ -11,7 +11,12 @@ import retrofit2.http.Query
 
 interface  InvestorApiService {
 
-
+    @Headers(
+        "AppId: 3a97b932a9d449c981b595",
+        "Content-Type: application/json",
+        "appVersion: 5.10.0",
+        "apiVersion: 3.0.0"
+    )
     @GET("/investorproducts")
-    fun getInvestorProducts(@HeaderMap headers : Map<String, String>) : Observable<ResponseBody>
+    fun getInvestorProducts(@Query("Authorization") authorizationKey: String) : Observable<ResponseBody>
 }
