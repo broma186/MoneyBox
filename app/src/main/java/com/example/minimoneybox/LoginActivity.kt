@@ -89,8 +89,12 @@ class LoginActivity : AppCompatActivity() {
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({investorResponse: InvestorResponse? ->
                 Log.d(LoginActivity.TAG,"getInvestor success, first product id is: " + investorResponse?.productResponses?.get(0)?.id)
-
-
+                if (investorResponse?.productResponses != null) {
+                    goToUserAccounts(loginRequest)
+                } else {
+                    val msg = loginRequest.idfa + " has no accounts"
+                    Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
+                }
             }, { error ->
             Log.d(LoginActivity.TAG,"getinvestor failure: " + error?.message)
         })
