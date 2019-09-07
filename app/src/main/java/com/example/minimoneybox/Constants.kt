@@ -23,6 +23,7 @@ object Constants {
         val EMAIL_KEY : String = "email"
         val PASSWORD_KEY : String = "password"
         val FULL_NAME_KEY : String = "idfa"
-
+        val PLAN_VALUE_KEY : String = "planValueTotal"
+        val PRODUCT_RESPONSES_KEY : String = "productResponses"
 
 }

@@ -15,6 +15,8 @@ import com.example.minimoneybox.Constants.ANIMATED_FRACTION_MAX_CONSTANT
 import com.example.minimoneybox.Constants.EMAIL_REGEX
 import com.example.minimoneybox.Constants.NAME_REGEX
 import com.example.minimoneybox.Constants.PASSWORD_REGEX
+import com.example.minimoneybox.Constants.PLAN_VALUE_KEY
+import com.example.minimoneybox.Constants.PRODUCT_RESPONSES_KEY
 import com.example.minimoneybox.Request.LoginRequest
 import com.example.minimoneybox.api.MoneyBoxApiService
 import com.example.minimoneybox.response.InvestorResponse
@@ -82,15 +84,13 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun loadInvestorData(authToken : String?, loginRequest: LoginRequest) {
-
-        Log.d(LoginActivity.TAG,"about to getInvestors")
         val observable = MoneyBoxApiService.investorApiCall().getInvestorProducts("Bearer " + authToken)
         observable.subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({investorResponse: InvestorResponse? ->
                 Log.d(LoginActivity.TAG,"getInvestor success, first product id is: " + investorResponse?.productResponses?.get(0)?.id)
                 if (investorResponse?.totalPlanValue != null) {
-                    goToUserAccounts(loginRequest)
+                    goToUserAccounts(loginRequest, investorResponse)
                 } else {
                     val msg = loginRequest.idfa + " has no accounts"
                     Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
@@ -102,13 +102,15 @@ class LoginActivity : AppCompatActivity() {
     }
 
 
-    private fun goToUserAccounts(loginRequest: LoginRequest) {
+    private fun goToUserAccounts(loginRequest: LoginRequest, investorResponse: InvestorResponse) {
         val intent = Intent(this, UserAccountsActivity::class.java)
         intent.putExtra("email", loginRequest.email)
         intent.putExtra("password", loginRequest.password)
         if (!loginRequest.idfa.isEmpty()) {
             intent.putExtra("idfa", loginRequest.idfa)
         }
+        intent.putExtra(PLAN_VALUE_KEY, investorResponse.totalPlanValue)
+        intent.putParcelableArrayListExtra(PRODUCT_RESPONSES_KEY, ArrayList(investorResponse.productResponses))
         startActivity(intent)
     }
 

@@ -1,6 +1,9 @@
 package com.example.minimoneybox.response
 
+import android.os.Parcel
+import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
+import kotlinx.android.parcel.Parcelize
 
 data class InvestorResponse (
 
@@ -8,13 +11,21 @@ data class InvestorResponse (
     @SerializedName("ProductResponses") val productResponses: List<ProductResponse>? = null
 )
 
-data class ProductResponse (
+@Parcelize
+class ProductResponse : Parcelable {
 
-    @SerializedName("Id") val id: Int? = null,
-    @SerializedName("PlanValue") val planValue: String? = null,
-    @SerializedName("MoneyBox") val moneyBox: String? = null,
-    @SerializedName("Product") val product: Product? = null
-)
+    @SerializedName("Id")
+    val id: Int? = null
+
+    @SerializedName("PlanValue")
+    val planValue: String? = null
+
+    @SerializedName("MoneyBox")
+    val moneyBox: String? = null
+
+    @SerializedName("Product")
+    val product: Product? = null
+}
 
 data class Product (
     @SerializedName("Id") val id: Int? = null,
