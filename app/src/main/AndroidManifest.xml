@@ -26,6 +26,10 @@
             android:name=".UserAccountsActivity"
             android:label="@string/app_name">
         </activity>
+        <activity
+            android:name=".IndividualAccountActivity"
+            android:label="@string/app_name">
+        </activity>
     </application>
 
 </manifest>

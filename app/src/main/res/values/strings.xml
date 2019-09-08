@@ -14,5 +14,7 @@
 
     <string name="user_accounts_title">User Accounts</string>
     <string name="total_plan_value_title">Total Plan Value: </string>
+    <string name="individual_account_title">Individual Account</string>
+
 
 </resources>

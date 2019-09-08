@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <TextView
+        android:id="@+id/individual_accounts_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/user_accounts_title"
+        android:layout_marginBottom="40dp"
+        android:layout_marginStart="30dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/individual_account_name"
+        android:layout_width="wrap_content"
+        android:text="Account Name"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/individual_accounts_title" />
+
+    <TextView
+        android:id="@+id/individual_plan_value_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="70dp"
+        android:text="Plan Value: "
+        android:visibility="gone"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/individual_accounts_title" />
+
+    <TextView
+        android:id="@+id/individual_plan_value_value"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="$1000"
+        app:layout_constraintStart_toEndOf="@id/individual_plan_value_title"
+        app:layout_constraintTop_toBottomOf="@id/individual_accounts_title" />
+
+    <TextView
+        android:id="@+id/individual_money_box_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Moneybox: "
+        android:visibility="gone"
+        app:layout_constraintStart_toStartOf="@id/individual_plan_value_title"
+        app:layout_constraintTop_toBottomOf="@id/individual_plan_value_title" />
+
+    <TextView
+        android:id="@+id/individual_money_box_value"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="$100"
+        app:layout_constraintStart_toEndOf="@id/individual_money_box_title"
+        app:layout_constraintTop_toBottomOf="@id/individual_plan_value_value"  />
+</android.support.constraint.ConstraintLayout>

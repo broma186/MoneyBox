@@ -25,5 +25,6 @@ object Constants {
         val FULL_NAME_KEY : String = "idfa"
         val PLAN_VALUE_KEY : String = "planValueTotal"
         val PRODUCT_RESPONSES_KEY : String = "productResponses"
+        val PRODUCT_RESPONSE_KEY : String = "productResponse"
 
 }

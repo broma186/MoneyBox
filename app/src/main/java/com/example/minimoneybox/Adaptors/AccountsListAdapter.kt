@@ -1,12 +1,16 @@
 package com.example.minimoneybox.Adaptors
 
 import android.content.Context
+import android.content.Intent
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.TextView
+import com.example.minimoneybox.Constants.PRODUCT_RESPONSES_KEY
+import com.example.minimoneybox.Constants.PRODUCT_RESPONSE_KEY
+import com.example.minimoneybox.IndividualAccountActivity
 import com.example.minimoneybox.R
 import com.example.minimoneybox.response.ProductResponse
 import kotlinx.android.synthetic.main.layout_accounts_item.view.*
@@ -37,11 +41,19 @@ class AccountsListAdapter(private val mContext: Context, private var products: A
 
         }
 
+
+
         // Replace the contents of a view (invoked by the layout manager)
         override fun onBindViewHolder(holder: AccountsViewHolder, position: Int) {
                 holder.itemView.account_name.text = products[position].product?.friendlyName
                 holder.itemView.plan_value_value.text = products[position].planValue
                 holder.itemView.money_box_value.text = products[position].moneyBox
+
+                holder.itemView.setOnClickListener({View.OnClickListener {
+                        val intent = Intent(mContext, IndividualAccountActivity::class.java)
+                        intent.putExtra(PRODUCT_RESPONSE_KEY, products[position])
+                        mContext.startActivity(intent)
+                }})
         }
 
         // Return the size of your dataset (invoked by the layout manager)
