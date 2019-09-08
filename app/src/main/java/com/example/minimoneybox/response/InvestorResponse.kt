@@ -5,29 +5,111 @@ import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
 import kotlinx.android.parcel.Parcelize
 
-data class InvestorResponse (
 
-    @SerializedName("TotalPlanValue") val totalPlanValue: String? = null,
-    @SerializedName("ProductResponses") val productResponses: List<ProductResponse>? = null
-)
+class InvestorResponse() : Parcelable {
 
-@Parcelize
-class ProductResponse : Parcelable {
+    @SerializedName("TotalPlanValue")
+    var totalPlanValue: String? = null
+    @SerializedName("ProductResponses")
+    var productResponses: List<ProductResponse>? = null
 
-    @SerializedName("Id")
-    val id: Int? = null
+    constructor(parcel: Parcel) : this() {
+        totalPlanValue = parcel.readString()
+        productResponses = parcel.createTypedArrayList(ProductResponse)
+    }
 
-    @SerializedName("PlanValue")
-    val planValue: String? = null
+    override fun writeToParcel(parcel: Parcel, flags: Int) {
+        parcel.writeString(totalPlanValue)
+        parcel.writeTypedList(productResponses)
+    }
 
-    @SerializedName("MoneyBox")
-    val moneyBox: String? = null
+    override fun describeContents(): Int {
+        return 0
+    }
 
-    @SerializedName("Product")
-    val product: Product? = null
+    companion object CREATOR : Parcelable.Creator<InvestorResponse> {
+        override fun createFromParcel(parcel: Parcel): InvestorResponse {
+            return InvestorResponse(parcel)
+        }
+
+        override fun newArray(size: Int): Array<InvestorResponse?> {
+            return arrayOfNulls(size)
+        }
+    }
 }
 
-data class Product (
-    @SerializedName("Id") val id: Int? = null,
-    @SerializedName("FriendlyName") val friendlyName: String? = null
-)
+
+class ProductResponse() : Parcelable {
+
+    @SerializedName("Id")
+    var id: Int? = null
+
+    @SerializedName("PlanValue")
+    var planValue: String? = null
+
+    @SerializedName("MoneyBox")
+    var moneyBox: String? = null
+
+    @SerializedName("Product")
+    var product: Product? = null
+
+    constructor(parcel: Parcel) : this() {
+        id = parcel.readValue(Int::class.java.classLoader) as? Int
+        planValue = parcel.readString()
+        moneyBox = parcel.readString()
+        product = parcel.readParcelable(Product::class.java!!.getClassLoader())
+
+    }
+
+    override fun writeToParcel(parcel: Parcel, flags: Int) {
+        parcel.writeValue(id)
+        parcel.writeString(planValue)
+        parcel.writeString(moneyBox)
+        parcel.writeParcelable(product, 0)
+    }
+
+    override fun describeContents(): Int {
+        return 0
+    }
+
+    companion object CREATOR : Parcelable.Creator<ProductResponse> {
+        override fun createFromParcel(parcel: Parcel): ProductResponse {
+            return ProductResponse(parcel)
+        }
+
+        override fun newArray(size: Int): Array<ProductResponse?> {
+            return arrayOfNulls(size)
+        }
+    }
+}
+
+class Product() : Parcelable {
+    @SerializedName("Id")
+    var id: Int? = null
+    @SerializedName("FriendlyName")
+    var friendlyName: String? = null
+
+    constructor(parcel: Parcel) : this() {
+        id = parcel.readValue(Int::class.java.classLoader) as? Int
+        friendlyName = parcel.readString()
+    }
+
+    override fun writeToParcel(parcel: Parcel, flags: Int) {
+        parcel.writeValue(id)
+        parcel.writeString(friendlyName)
+    }
+
+    override fun describeContents(): Int {
+        return 0
+    }
+
+    companion object CREATOR : Parcelable.Creator<Product> {
+        override fun createFromParcel(parcel: Parcel): Product {
+            return Product(parcel)
+        }
+
+        override fun newArray(size: Int): Array<Product?> {
+            return arrayOfNulls(size)
+        }
+    }
+}

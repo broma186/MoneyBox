@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="70dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <TextView
+        android:id="@+id/account_name"
+        android:layout_width="wrap_content"
+        android:text="Account Name"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+
+    <TextView
+        android:id="@+id/plan_value_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Plan Value: "
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/account_name" />
+
+    <TextView
+        android:id="@+id/plan_value_value"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="$1000"
+        app:layout_constraintStart_toEndOf="@id/plan_value_title"
+        app:layout_constraintTop_toBottomOf="@id/account_name" />
+
+    <TextView
+        android:id="@+id/money_box_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Moneybox: "
+        app:layout_constraintStart_toStartOf="@id/plan_value_title"
+        app:layout_constraintTop_toBottomOf="@id/plan_value_value" />
+
+    <TextView
+        android:id="@+id/money_box_value"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="$100"
+        app:layout_constraintStart_toEndOf="@id/money_box_title"
+        app:layout_constraintTop_toBottomOf="@id/plan_value_value"  />
+
+</android.support.constraint.ConstraintLayout>

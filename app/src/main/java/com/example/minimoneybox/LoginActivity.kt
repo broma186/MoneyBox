@@ -21,6 +21,7 @@ import com.example.minimoneybox.Request.LoginRequest
 import com.example.minimoneybox.api.MoneyBoxApiService
 import com.example.minimoneybox.response.InvestorResponse
 import com.example.minimoneybox.response.LoginResponse
+import com.example.minimoneybox.response.ProductResponse
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import okhttp3.Response
@@ -109,6 +110,7 @@ class LoginActivity : AppCompatActivity() {
         if (!loginRequest.idfa.isEmpty()) {
             intent.putExtra("idfa", loginRequest.idfa)
         }
+
         intent.putExtra(PLAN_VALUE_KEY, investorResponse.totalPlanValue)
         intent.putParcelableArrayListExtra(PRODUCT_RESPONSES_KEY, ArrayList(investorResponse.productResponses))
         startActivity(intent)
