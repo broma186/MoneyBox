@@ -47,7 +47,7 @@ class ProductResponse() : Parcelable {
     @SerializedName("PlanValue")
     var planValue: String? = null
 
-    @SerializedName("MoneyBox")
+    @SerializedName("Moneybox")
     var moneyBox: String? = null
 
     @SerializedName("Product")
