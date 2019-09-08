@@ -20,7 +20,7 @@ class IndividualAccountActivity : AppCompatActivity(){
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_user_accounts)
+        setContentView(R.layout.activity_individual_accounts)
         setupViews()
     }
 

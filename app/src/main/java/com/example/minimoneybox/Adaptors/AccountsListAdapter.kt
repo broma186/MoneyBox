@@ -14,6 +14,8 @@ import com.example.minimoneybox.IndividualAccountActivity
 import com.example.minimoneybox.R
 import com.example.minimoneybox.response.ProductResponse
 import kotlinx.android.synthetic.main.layout_accounts_item.view.*
+import android.widget.Toast
+import android.util.Log
 
 
 class AccountsListAdapter(private val mContext: Context, private var products: ArrayList<ProductResponse>) :
@@ -29,7 +31,7 @@ class AccountsListAdapter(private val mContext: Context, private var products: A
                 // create a new view
                 // val textView = LayoutInflater.from(parent.context).inflate(R.layout.my_text_view, parent, false) as TextView
                 // set the view's size, margins, paddings and layout parameters
-                itemView = inflater.inflate(R.layout.layout_accounts_item, parent, false)
+                itemView = inflater.inflate(com.example.minimoneybox.R.layout.layout_accounts_item, parent, false)
                 return AccountsViewHolder(itemView!!)
         }
 
@@ -49,11 +51,11 @@ class AccountsListAdapter(private val mContext: Context, private var products: A
                 holder.itemView.plan_value_value.text = products[position].planValue
                 holder.itemView.money_box_value.text = products[position].moneyBox
 
-                holder.itemView.setOnClickListener({View.OnClickListener {
+                holder.itemView.setOnClickListener(View.OnClickListener { v ->
                         val intent = Intent(mContext, IndividualAccountActivity::class.java)
                         intent.putExtra(PRODUCT_RESPONSE_KEY, products[position])
                         mContext.startActivity(intent)
-                }})
+                })
         }
 
         // Return the size of your dataset (invoked by the layout manager)
