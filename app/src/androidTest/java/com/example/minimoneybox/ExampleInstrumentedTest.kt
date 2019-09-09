@@ -5,8 +5,10 @@ import android.support.test.runner.AndroidJUnit4
 import android.util.Log
 import android.widget.Toast
 import com.example.minimoneybox.Request.LoginRequest
+import com.example.minimoneybox.Request.TopUpRequest
 import com.example.minimoneybox.api.MoneyBoxApiService
 import com.example.minimoneybox.response.InvestorResponse
+import com.example.minimoneybox.response.TopUpResponse
 
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -65,8 +67,8 @@ class ExampleInstrumentedTest {
             .subscribe({ loginResponse ->
                 val authToken : String? = loginResponse?.loginSession?.bearerToken
                 if (authToken != null) {
-                    val observable = MoneyBoxApiService.investorApiCall().getInvestorProducts("Bearer " + authToken)
-                    observable.subscribeOn(Schedulers.io())
+                    val observableGetInv = MoneyBoxApiService.investorApiCall().getInvestorProducts("Bearer " + authToken)
+                    observableGetInv.subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe({investorResponse: InvestorResponse? ->
                             assertTrue(investorResponse?.totalPlanValue != null)
@@ -80,5 +82,17 @@ class ExampleInstrumentedTest {
                 Log.d(LoginActivity.TAG,"login failure: " + error?.message)
             })
 
+    }
+
+    @Test
+    fun topUpPayment() {
+        val observable = MoneyBoxApiService.topUpApiCall().topUp("Bearer TsMWRkbrcu3NGrpf84gi2+pg0iOMVymyKklmkY0oI84=", TopUpRequest(10, 1))
+        observable.subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({ topUpResponse: TopUpResponse? ->
+                assertTrue(topUpResponse != null)
+            }, { error ->
+                fail()
+            })
     }
 }

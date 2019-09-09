@@ -3,11 +3,10 @@ package com.example.minimoneybox.api
 import com.example.minimoneybox.Constants
 import com.example.minimoneybox.Request.InvestorApiService
 import com.example.minimoneybox.Request.LoginApiService
+import com.example.minimoneybox.Request.TopUpApiService
 import com.google.gson.GsonBuilder
-import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
-import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
@@ -38,25 +37,13 @@ object MoneyBoxApiService {
         .build()
         .create(InvestorApiService::class.java)!!
 
-
-
-    val loginClient: OkHttpClient
-        @Throws(NoSuchAlgorithmException::class, KeyManagementException::class)
-        get() {
-            if (logClient == null) {
-                val interceptor = HttpLoggingInterceptor()
-                interceptor.level = HttpLoggingInterceptor.Level.BODY
-                val httpBuilder = OkHttpClient.Builder()
-                httpBuilder
-                    .connectTimeout(15, TimeUnit.SECONDS)
-                    .readTimeout(20, TimeUnit.SECONDS)
-                    .addInterceptor(interceptor)  /// show all JSON in logCat
-                logClient = httpBuilder.build()
-
-            }
-            return logClient!!
-        }
-
+    fun topUpApiCall() = Retrofit.Builder()
+        .baseUrl(Constants.BASE_URL)
+        .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+        .addConverterFactory(gsonConverter)
+        .client(mainClient)
+        .build()
+        .create(TopUpApiService::class.java)!!
 
 
 

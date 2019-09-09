@@ -1,13 +1,22 @@
 package com.example.minimoneybox
 
 import android.os.Bundle
-import android.speech.tts.TextToSpeech
 import android.support.v7.app.AppCompatActivity
+import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.TextView
+import com.example.minimoneybox.Constants.AUTH_TOKEN_KEY
+import com.example.minimoneybox.Constants.FIXED_TOP_UP_AMOUNT
 import com.example.minimoneybox.Constants.PRODUCT_RESPONSE_KEY
+import com.example.minimoneybox.Request.TopUpRequest
+import com.example.minimoneybox.api.MoneyBoxApiService
 import com.example.minimoneybox.response.ProductResponse
+import com.example.minimoneybox.response.TopUpResponse
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
+import okhttp3.Response
+import okhttp3.ResponseBody
 
 class IndividualAccountActivity : AppCompatActivity(){
 
@@ -17,6 +26,7 @@ class IndividualAccountActivity : AppCompatActivity(){
     private lateinit var moneyBoxTitle : TextView
     private lateinit var moneyBoxValue : TextView
     private var account: ProductResponse? = null
+    private var authToken : String? = null
     private lateinit var topUpButton : Button
 
 
@@ -26,12 +36,16 @@ class IndividualAccountActivity : AppCompatActivity(){
         setupViews()
     }
 
+    companion object {
+        val TAG = "IndividualAccount"
+    }
+
     private fun setupViews() {
 
         val userAccountsIntentExtras : Bundle? = intent.extras;
         if (userAccountsIntentExtras?.containsKey(PRODUCT_RESPONSE_KEY)!!) {
             account = intent.getParcelableExtra(PRODUCT_RESPONSE_KEY)
-
+            authToken = intent.getStringExtra(AUTH_TOKEN_KEY)
             accountName = findViewById(R.id.individual_accounts_title)
             accountName.setText(account?.product?.friendlyName)
 
@@ -45,12 +59,24 @@ class IndividualAccountActivity : AppCompatActivity(){
             moneyBoxValue = findViewById(R.id.individual_money_box_value)
             moneyBoxValue.setText(account?.moneyBox)
 
+
             topUpButton = findViewById(R.id.top_up_button)
             topUpButton.setOnClickListener(View.OnClickListener { v ->
-                    //TODO : top up user one time payment API
+                doTopUp()
             })
         }
 
+    }
+
+    private fun doTopUp() {
+        val observable = MoneyBoxApiService.topUpApiCall().topUp(authToken, TopUpRequest(FIXED_TOP_UP_AMOUNT, account?.product?.id))
+        observable.subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({ topUpResponse: TopUpResponse? ->
+                Log.d(TAG,"top up success, first product id is: " + topUpResponse?.text)
+            }, { error ->
+                Log.d(TAG,"top up failure: " + error?.message)
+            })
     }
 
 }

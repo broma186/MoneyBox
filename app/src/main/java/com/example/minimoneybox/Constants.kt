@@ -20,6 +20,8 @@ object Constants {
         val TEMP_PASSWORD : String = "P455word12"
         val TEMP_IDFA : String = "ANYTHING"
 
+        val AUTH_TOKEN_KEY : String = "authToken"
+        val FIXED_TOP_UP_AMOUNT : Int = 10
         val EMAIL_KEY : String = "email"
         val PASSWORD_KEY : String = "password"
         val FULL_NAME_KEY : String = "idfa"

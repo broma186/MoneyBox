@@ -3,6 +3,7 @@ package com.example.minimoneybox.Adaptors
 import android.content.Context
 import android.content.Intent
 import android.support.v7.widget.RecyclerView
+import android.util.JsonToken
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,9 +17,10 @@ import com.example.minimoneybox.response.ProductResponse
 import kotlinx.android.synthetic.main.layout_accounts_item.view.*
 import android.widget.Toast
 import android.util.Log
+import com.example.minimoneybox.Constants.AUTH_TOKEN_KEY
 
 
-class AccountsListAdapter(private val mContext: Context, private var products: ArrayList<ProductResponse>) :
+class AccountsListAdapter(private val mContext: Context, private val products: ArrayList<ProductResponse>, private val authToken: String?) :
         RecyclerView.Adapter<AccountsListAdapter.AccountsViewHolder>() {
 
         private val TAG: String = "AccountsListAdapter"
@@ -54,6 +56,7 @@ class AccountsListAdapter(private val mContext: Context, private var products: A
                 holder.itemView.setOnClickListener(View.OnClickListener { v ->
                         val intent = Intent(mContext, IndividualAccountActivity::class.java)
                         intent.putExtra(PRODUCT_RESPONSE_KEY, products[position])
+                        intent.putExtra(AUTH_TOKEN_KEY, authToken)
                         mContext.startActivity(intent)
                 })
         }

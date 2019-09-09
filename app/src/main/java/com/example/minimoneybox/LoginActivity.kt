@@ -12,6 +12,7 @@ import android.widget.Toast
 import com.airbnb.lottie.LottieAnimationView
 import com.airbnb.lottie.LottieDrawable
 import com.example.minimoneybox.Constants.ANIMATED_FRACTION_MAX_CONSTANT
+import com.example.minimoneybox.Constants.AUTH_TOKEN_KEY
 import com.example.minimoneybox.Constants.EMAIL_REGEX
 import com.example.minimoneybox.Constants.NAME_REGEX
 import com.example.minimoneybox.Constants.PASSWORD_REGEX
@@ -64,7 +65,7 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun loginUser() {
-        val loginRequest : LoginRequest = LoginRequest(Constants.TEMP_EMAIL,
+        val loginRequest = LoginRequest(Constants.TEMP_EMAIL,
             Constants.TEMP_PASSWORD, Constants.TEMP_IDFA)
         val observable = MoneyBoxApiService.loginApiCall().loginUser(loginRequest)
         observable.subscribeOn(Schedulers.io())
@@ -74,7 +75,7 @@ class LoginActivity : AppCompatActivity() {
                 //TODO: If bearer token is different, store and use that instead.
                 val bearerToken : String? = loginResponse?.loginSession?.bearerToken
                 if (bearerToken != null) {
-                    loadInvestorData(bearerToken, loginRequest)
+                    loadInvestorData("Bearer " + bearerToken, loginRequest)
                 } else {
                     //TODO display toast saying user failed to login, They must input again.
                 }
@@ -84,33 +85,31 @@ class LoginActivity : AppCompatActivity() {
 
     }
 
-    private fun loadInvestorData(authToken : String?, loginRequest: LoginRequest) {
-        val observable = MoneyBoxApiService.investorApiCall().getInvestorProducts("Bearer " + authToken)
+    private fun loadInvestorData(authToken : String, loginRequest: LoginRequest) {
+        val observable = MoneyBoxApiService.investorApiCall().getInvestorProducts(authToken)
         observable.subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({investorResponse: InvestorResponse? ->
-                Log.d(LoginActivity.TAG,"getInvestor success, first product id is: " + investorResponse?.productResponses?.get(0)?.id)
                 if (investorResponse?.totalPlanValue != null) {
-                    goToUserAccounts(loginRequest, investorResponse)
+                    goToUserAccounts(authToken, loginRequest, investorResponse)
                 } else {
                     val msg = loginRequest.idfa + " has no accounts"
                     Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
                 }
             }, { error ->
-            Log.d(LoginActivity.TAG,"getinvestor failure: " + error?.message)
         })
 
     }
 
 
-    private fun goToUserAccounts(loginRequest: LoginRequest, investorResponse: InvestorResponse) {
+    private fun goToUserAccounts(authToken : String, loginRequest: LoginRequest, investorResponse: InvestorResponse) {
         val intent = Intent(this, UserAccountsActivity::class.java)
         intent.putExtra("email", loginRequest.email)
         intent.putExtra("password", loginRequest.password)
         if (!loginRequest.idfa.isEmpty()) {
             intent.putExtra("idfa", loginRequest.idfa)
         }
-
+        intent.putExtra(AUTH_TOKEN_KEY, authToken)
         intent.putExtra(PLAN_VALUE_KEY, investorResponse.totalPlanValue)
         intent.putParcelableArrayListExtra(PRODUCT_RESPONSES_KEY, ArrayList(investorResponse.productResponses))
         startActivity(intent)

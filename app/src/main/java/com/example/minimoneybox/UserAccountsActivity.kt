@@ -8,6 +8,7 @@ import android.view.View
 import android.widget.Button
 import android.widget.TextView
 import com.example.minimoneybox.Adaptors.AccountsListAdapter
+import com.example.minimoneybox.Constants.AUTH_TOKEN_KEY
 import com.example.minimoneybox.Constants.FULL_NAME_KEY
 import com.example.minimoneybox.Constants.PLAN_VALUE_KEY
 import com.example.minimoneybox.response.ProductResponse
@@ -22,6 +23,8 @@ class UserAccountsActivity : AppCompatActivity() {
     private lateinit var accountsViewLayoutManager: RecyclerView.LayoutManager
     private var accountList: ArrayList<ProductResponse> = arrayListOf()
     private  lateinit var accountsRecyclerView : RecyclerView
+    private var authToken : String? = null
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,7 +46,7 @@ class UserAccountsActivity : AppCompatActivity() {
             planValueText.visibility = View.VISIBLE
             planValueText.text = loginIntentExtras.getString(PLAN_VALUE_KEY)
         }
-
+        authToken = loginIntentExtras.getString(AUTH_TOKEN_KEY)
         accountList = loginIntentExtras.getParcelableArrayList(Constants.PRODUCT_RESPONSES_KEY)
         setupAccountsList();
     }
@@ -51,7 +54,7 @@ class UserAccountsActivity : AppCompatActivity() {
     private fun setupAccountsList() {
         accountsRecyclerView =  findViewById(R.id.user_accounts_list)
         accountsViewLayoutManager = LinearLayoutManager(this)
-        accountsRecyclerAdapter = AccountsListAdapter(this, accountList)
+        accountsRecyclerAdapter = AccountsListAdapter(this, accountList, authToken)
         accountsRecyclerView.adapter = accountsRecyclerAdapter
         accountsRecyclerView.layoutManager = accountsViewLayoutManager
     }
