@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.speech.tts.TextToSpeech
 import android.support.v7.app.AppCompatActivity
 import android.view.View
+import android.widget.Button
 import android.widget.TextView
 import com.example.minimoneybox.Constants.PRODUCT_RESPONSE_KEY
 import com.example.minimoneybox.response.ProductResponse
@@ -16,6 +17,7 @@ class IndividualAccountActivity : AppCompatActivity(){
     private lateinit var moneyBoxTitle : TextView
     private lateinit var moneyBoxValue : TextView
     private var account: ProductResponse? = null
+    private lateinit var topUpButton : Button
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -42,6 +44,11 @@ class IndividualAccountActivity : AppCompatActivity(){
             moneyBoxTitle.visibility = View.VISIBLE
             moneyBoxValue = findViewById(R.id.individual_money_box_value)
             moneyBoxValue.setText(account?.moneyBox)
+
+            topUpButton = findViewById(R.id.top_up_button)
+            topUpButton.setOnClickListener(View.OnClickListener { v ->
+                    //TODO : top up user one time payment API
+            })
         }
 
     }
