@@ -4,6 +4,7 @@ import android.support.test.InstrumentationRegistry
 import android.support.test.runner.AndroidJUnit4
 import android.util.Log
 import android.widget.Toast
+import com.example.minimoneybox.Constants.BEARER_STR
 import com.example.minimoneybox.Request.LoginRequest
 import com.example.minimoneybox.Request.TopUpRequest
 import com.example.minimoneybox.api.MoneyBoxApiService
@@ -67,7 +68,7 @@ class ExampleInstrumentedTest {
             .subscribe({ loginResponse ->
                 val authToken : String? = loginResponse?.loginSession?.bearerToken
                 if (authToken != null) {
-                    val observableGetInv = MoneyBoxApiService.investorApiCall().getInvestorProducts("Bearer " + authToken)
+                    val observableGetInv = MoneyBoxApiService.investorApiCall().getInvestorProducts(BEARER_STR + authToken)
                     observableGetInv.subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe({investorResponse: InvestorResponse? ->

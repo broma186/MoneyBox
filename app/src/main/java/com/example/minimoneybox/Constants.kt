@@ -20,7 +20,7 @@ object Constants {
         val TEMP_PASSWORD : String = "P455word12"
         val TEMP_IDFA : String = "ANYTHING"
 
-        val AUTH_TOKEN_KEY : String = "authToken"
+        val AUTH_TOKEN_TIME_STAMP : String = "authTokenTimeStamp"
         val FIXED_TOP_UP_AMOUNT : Int = 10
         val EMAIL_KEY : String = "email"
         val PASSWORD_KEY : String = "password"
@@ -28,5 +28,10 @@ object Constants {
         val PLAN_VALUE_KEY : String = "planValueTotal"
         val PRODUCT_RESPONSES_KEY : String = "productResponses"
         val PRODUCT_RESPONSE_KEY : String = "productResponse"
+        val BEARER_STR : String = "Bearer "
+
+        val AUTH_TOKEN_KEY : String = "authToken"
+        val SP_STORAGE : String = "storage"
+        val FIVE_MINUTES : Long = 300000
 
 }

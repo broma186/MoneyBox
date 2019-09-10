@@ -1,10 +1,12 @@
 package com.example.minimoneybox
 
+import android.content.Context
 import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.design.widget.TextInputLayout
 import android.text.TextUtils
+import android.util.Base64
 import android.util.Log
 import android.widget.Button
 import android.widget.EditText
@@ -13,11 +15,15 @@ import com.airbnb.lottie.LottieAnimationView
 import com.airbnb.lottie.LottieDrawable
 import com.example.minimoneybox.Constants.ANIMATED_FRACTION_MAX_CONSTANT
 import com.example.minimoneybox.Constants.AUTH_TOKEN_KEY
+import com.example.minimoneybox.Constants.AUTH_TOKEN_TIME_STAMP
+import com.example.minimoneybox.Constants.BEARER_STR
+import com.example.minimoneybox.Constants.BEARER_TOKEN_KEY
 import com.example.minimoneybox.Constants.EMAIL_REGEX
 import com.example.minimoneybox.Constants.NAME_REGEX
 import com.example.minimoneybox.Constants.PASSWORD_REGEX
 import com.example.minimoneybox.Constants.PLAN_VALUE_KEY
 import com.example.minimoneybox.Constants.PRODUCT_RESPONSES_KEY
+import com.example.minimoneybox.Constants.SP_STORAGE
 import com.example.minimoneybox.Request.LoginRequest
 import com.example.minimoneybox.api.MoneyBoxApiService
 import com.example.minimoneybox.response.InvestorResponse
@@ -27,8 +33,15 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import okhttp3.Response
 import okhttp3.ResponseBody
+import java.time.LocalDateTime
+import java.util.*
 import java.util.regex.Pattern
-
+import javax.crypto.Cipher
+import javax.crypto.KeyGenerator
+import javax.crypto.SecretKey
+import javax.crypto.spec.IvParameterSpec
+import javax.crypto.spec.SecretKeySpec
+import kotlin.collections.ArrayList
 
 
 /**
@@ -54,7 +67,6 @@ class LoginActivity : AppCompatActivity() {
     }
 
 
-
     override fun onStart() {
         super.onStart()
         setupAnimation()
@@ -71,19 +83,21 @@ class LoginActivity : AppCompatActivity() {
         observable.subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({loginResponse: LoginResponse? ->
-                Log.d(TAG, "login response recieved")
-                //TODO: If bearer token is different, store and use that instead.
-                val bearerToken : String? = loginResponse?.loginSession?.bearerToken
-                if (bearerToken != null) {
-                    loadInvestorData("Bearer " + bearerToken, loginRequest)
-                } else {
-                    //TODO display toast saying user failed to login, They must input again.
+                if (loginResponse?.loginSession != null) {
+                    storeAuthTimeStamp()
+                    loadInvestorData(BEARER_STR + loginResponse.loginSession, loginRequest)
+                } else{
+                    val msg = "Failed to log in " + loginRequest.idfa
+                    Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
                 }
-            }, { error ->
-                Log.d(LoginActivity.TAG,"login failure: " + error?.message)
-            })
+            }, { error -> })
 
     }
+
+    private fun storeAuthTimeStamp() {
+        this.getSharedPreferences(SP_STORAGE, Context.MODE_PRIVATE).edit().putLong(AUTH_TOKEN_TIME_STAMP, System.currentTimeMillis()).commit()
+    }
+
 
     private fun loadInvestorData(authToken : String, loginRequest: LoginRequest) {
         val observable = MoneyBoxApiService.investorApiCall().getInvestorProducts(authToken)
@@ -104,6 +118,7 @@ class LoginActivity : AppCompatActivity() {
 
     private fun goToUserAccounts(authToken : String, loginRequest: LoginRequest, investorResponse: InvestorResponse) {
         val intent = Intent(this, UserAccountsActivity::class.java)
+        intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
         intent.putExtra("email", loginRequest.email)
         intent.putExtra("password", loginRequest.password)
         if (!loginRequest.idfa.isEmpty()) {

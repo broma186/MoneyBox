@@ -55,6 +55,7 @@ class AccountsListAdapter(private val mContext: Context, private val products: A
 
                 holder.itemView.setOnClickListener(View.OnClickListener { v ->
                         val intent = Intent(mContext, IndividualAccountActivity::class.java)
+                        intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
                         intent.putExtra(PRODUCT_RESPONSE_KEY, products[position])
                         intent.putExtra(AUTH_TOKEN_KEY, authToken)
                         mContext.startActivity(intent)
