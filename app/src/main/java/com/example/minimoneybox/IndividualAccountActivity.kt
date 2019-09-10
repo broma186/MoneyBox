@@ -46,7 +46,7 @@ class IndividualAccountActivity : AppCompatActivity(){
         if (userAccountsIntentExtras?.containsKey(PRODUCT_RESPONSE_KEY)!!) {
             account = intent.getParcelableExtra(PRODUCT_RESPONSE_KEY)
             authToken = intent.getStringExtra(AUTH_TOKEN_KEY)
-            accountName = findViewById(R.id.individual_accounts_title)
+            accountName = findViewById(R.id.individual_account_name)
             accountName.setText(account?.product?.friendlyName)
 
             planValueTitle = findViewById(R.id.individual_plan_value_title)
