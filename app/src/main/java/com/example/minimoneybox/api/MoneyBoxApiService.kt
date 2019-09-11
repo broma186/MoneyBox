@@ -63,8 +63,11 @@ object MoneyBoxApiService {
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({loginResponse: LoginResponse? ->
                 if (loginResponse?.loginSession != null) {
-                    LoginRequestRealm.writeLoginRequestToDatabase(loginRequest)
-                    storeAuthTimeStamp(context)
+                    // Only write successful realm user credentials to database if that user doesn't exist.
+                    if (LoginRequestRealm.retrieveLoginRequestFromDatabase() == null) {
+                        LoginRequestRealm.writeLoginRequestToDatabase(loginRequest)
+                    }
+                    storeAuthTimeStamp(context) // Used for checking expired auth token.
                     loadInvestorData(context,Constants.BEARER_STR + loginResponse?.loginSession?.bearerToken, loginRequest)
                 } else{
                     val msg = "Failed to log in " + loginRequest.idfa

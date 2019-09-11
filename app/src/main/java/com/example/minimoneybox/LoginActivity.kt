@@ -26,6 +26,9 @@ import com.example.minimoneybox.Constants.PIG_SHOW_UP_FRAME
 import com.example.minimoneybox.Constants.PLAN_VALUE_KEY
 import com.example.minimoneybox.Constants.PRODUCT_RESPONSES_KEY
 import com.example.minimoneybox.Constants.SP_STORAGE
+import com.example.minimoneybox.Constants.TEMP_EMAIL
+import com.example.minimoneybox.Constants.TEMP_IDFA
+import com.example.minimoneybox.Constants.TEMP_PASSWORD
 import com.example.minimoneybox.Request.LoginRequest
 import com.example.minimoneybox.Request.LoginRequestRealm
 import com.example.minimoneybox.api.MoneyBoxApiService
@@ -90,8 +93,10 @@ class LoginActivity : AppCompatActivity() {
         btn_sign_in.setOnClickListener {
            // if (allFieldsValid()) {
             Toast.makeText(this, R.string.input_valid, Toast.LENGTH_LONG).show()
-            MoneyBoxApiService.loginUser(this, LoginRequestRealm.getLoginRequest(et_email.text.toString(),
-                et_password.text.toString(), et_name.text.toString()))
+          //  MoneyBoxApiService.loginUser(this, LoginRequestRealm.getLoginRequest(et_email.text.toString(),
+           //     et_password.text.toString(), et_name.text.toString()))
+            MoneyBoxApiService.loginUser(this, LoginRequestRealm.getLoginRequest(
+                TEMP_EMAIL, TEMP_PASSWORD, TEMP_IDFA))
           //  }
         }
     }

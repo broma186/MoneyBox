@@ -13,7 +13,8 @@ open class LoginRequestRealm : RealmObject() {
 
 
     companion object {
-        fun writeLoginRequestToDatabase(loginRequest : LoginRequest) {
+
+        fun writeLoginRequestToDatabase(loginRequest: LoginRequest) {
             val realm: Realm = Realm.getDefaultInstance()
             realm.beginTransaction()
             val loginRequestRealm: LoginRequestRealm = realm.createObject(LoginRequestRealm::class.java, Constants.TEMP_EMAIL)
@@ -23,7 +24,7 @@ open class LoginRequestRealm : RealmObject() {
             realm.commitTransaction()
         }
 
-        fun retrieveLoginRequestFromDatabase() : LoginRequestRealm {
+        fun retrieveLoginRequestFromDatabase() : LoginRequestRealm? {
             return Realm.getDefaultInstance().where(LoginRequestRealm::class.java)
                 .equalTo("email", Constants.TEMP_EMAIL)
                 .findFirst()

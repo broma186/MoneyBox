@@ -37,9 +37,9 @@ class LaunchActivity : AppCompatActivity() {
             goToLogin()
         }
         else { // Log user in again with old credentials from database as authentication hasn't expired yet.
-            val loginRequestRealm : LoginRequestRealm = LoginRequestRealm.retrieveLoginRequestFromDatabase()
-            MoneyBoxApiService.loginUser(this, LoginRequestRealm.getLoginRequest(loginRequestRealm.email,
-                loginRequestRealm.password, loginRequestRealm.idfa))
+            val loginRequestRealm : LoginRequestRealm? = LoginRequestRealm.retrieveLoginRequestFromDatabase()
+            MoneyBoxApiService.loginUser(this, LoginRequestRealm.getLoginRequest(loginRequestRealm?.email,
+                loginRequestRealm?.password, loginRequestRealm?.idfa))
         }
     }
 
