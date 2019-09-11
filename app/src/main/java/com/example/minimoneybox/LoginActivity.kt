@@ -27,6 +27,7 @@ import com.example.minimoneybox.Constants.PLAN_VALUE_KEY
 import com.example.minimoneybox.Constants.PRODUCT_RESPONSES_KEY
 import com.example.minimoneybox.Constants.SP_STORAGE
 import com.example.minimoneybox.Request.LoginRequest
+import com.example.minimoneybox.Request.LoginRequestRealm
 import com.example.minimoneybox.api.MoneyBoxApiService
 import com.example.minimoneybox.response.InvestorResponse
 import com.example.minimoneybox.response.LoginResponse
@@ -87,11 +88,11 @@ class LoginActivity : AppCompatActivity() {
         pigAnimation = findViewById(R.id.animation)
 
         btn_sign_in.setOnClickListener {
-            if (allFieldsValid()) {
-            //    checkAndResetErrorWarnings()
-                Toast.makeText(this, R.string.input_valid, Toast.LENGTH_LONG).show()
-                MoneyBoxApiService.loginUser(this)
-            }
+           // if (allFieldsValid()) {
+            Toast.makeText(this, R.string.input_valid, Toast.LENGTH_LONG).show()
+            MoneyBoxApiService.loginUser(this, LoginRequestRealm.getLoginRequest(et_email.text.toString(),
+                et_password.text.toString(), et_name.text.toString()))
+          //  }
         }
     }
 

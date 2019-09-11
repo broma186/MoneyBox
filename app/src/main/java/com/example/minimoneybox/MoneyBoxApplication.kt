@@ -13,28 +13,21 @@ import com.example.minimoneybox.api.MoneyBoxApiService
 import com.example.minimoneybox.response.LoginResponse
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
+import io.realm.Realm
+import io.realm.RealmConfiguration
 
 
-class MoneyBoxApplication : Application(), Application.ActivityLifecycleCallbacks {
+
+
+class MoneyBoxApplication : Application() {
 
     override fun onCreate() {
         super.onCreate()
+        Realm.init(this) //init realmdb this covers all use of realm    within the project.
+        val config = RealmConfiguration.Builder()
+            .name("merealm.realm")
+            .schemaVersion(1)
+            .build()
+        Realm.setDefaultConfiguration(config)
     }
-
-    override fun onActivityCreated(activity: Activity?, savedInstanceState: Bundle?) {}
-
-    override fun onActivitySaveInstanceState(activity: Activity?, outState: Bundle?) {}
-
-    override fun onActivityStarted(activity: Activity?) {
-
-    }
-
-
-    override fun onActivityStopped(activity: Activity?) {}
-
-    override fun onActivityPaused(activity: Activity?) {}
-
-    override fun onActivityResumed(activity: Activity?) {}
-
-    override fun onActivityDestroyed(activity: Activity?) {}
 }

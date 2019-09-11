@@ -2,18 +2,17 @@ package com.example.minimoneybox.api
 
 import android.content.Context
 import android.content.Intent
+import android.util.Log
 import android.widget.Toast
 import com.example.minimoneybox.Constants
-import com.example.minimoneybox.Request.InvestorApiService
-import com.example.minimoneybox.Request.LoginApiService
-import com.example.minimoneybox.Request.LoginRequest
-import com.example.minimoneybox.Request.TopUpApiService
+import com.example.minimoneybox.Request.*
 import com.example.minimoneybox.UserAccountsActivity
 import com.example.minimoneybox.response.InvestorResponse
 import com.example.minimoneybox.response.LoginResponse
 import com.google.gson.GsonBuilder
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
+import io.realm.Realm
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -22,6 +21,8 @@ import retrofit2.converter.gson.GsonConverterFactory
 import java.security.KeyManagementException
 import java.security.NoSuchAlgorithmException
 import java.util.concurrent.TimeUnit
+import kotlin.math.log
+
 
 object MoneyBoxApiService {
 
@@ -55,14 +56,14 @@ object MoneyBoxApiService {
         .create(TopUpApiService::class.java)!!
 
 
-    fun loginUser(context: Context) {
-        val loginRequest = LoginRequest(Constants.TEMP_EMAIL,
-            Constants.TEMP_PASSWORD, Constants.TEMP_IDFA)
+    fun loginUser(context: Context, loginRequest: LoginRequest) {
+
         val observable = MoneyBoxApiService.loginApiCall().loginUser(loginRequest)
         observable.subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({loginResponse: LoginResponse? ->
                 if (loginResponse?.loginSession != null) {
+                    LoginRequestRealm.writeLoginRequestToDatabase(loginRequest)
                     storeAuthTimeStamp(context)
                     loadInvestorData(context,Constants.BEARER_STR + loginResponse?.loginSession?.bearerToken, loginRequest)
                 } else{
@@ -70,6 +71,7 @@ object MoneyBoxApiService {
                     Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
                 }
             }, { error ->
+
                 val msg = "Failed to log in " + loginRequest.idfa
                 Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
             })
@@ -103,7 +105,7 @@ object MoneyBoxApiService {
         intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
         intent.putExtra("email", loginRequest.email)
         intent.putExtra("password", loginRequest.password)
-        if (!loginRequest.idfa.isEmpty()) {
+        if (!loginRequest.idfa?.isEmpty()!!) {
             intent.putExtra("idfa", loginRequest.idfa)
         }
         intent.putExtra(Constants.AUTH_TOKEN_KEY, authToken)

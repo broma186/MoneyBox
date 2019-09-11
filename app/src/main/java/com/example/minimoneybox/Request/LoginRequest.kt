@@ -1,8 +1,12 @@
 package com.example.minimoneybox.Request
 
+import com.example.minimoneybox.Constants
 import com.example.minimoneybox.response.LoginResponse
 import com.google.gson.annotations.SerializedName
 import io.reactivex.Observable
+import io.realm.Realm
+import io.realm.RealmObject
+import io.realm.annotations.PrimaryKey
 import retrofit2.http.*
 
 interface LoginApiService {
@@ -17,7 +21,11 @@ interface LoginApiService {
 }
 
 data class LoginRequest (
-    @SerializedName("Email") var email: String,
-    @SerializedName("Password") var password: String,
-    @SerializedName("Idfa") var idfa: String
+    @SerializedName("Email") var email: String? = null,
+    @SerializedName("Password") var password: String? = null,
+    @SerializedName("Idfa") var idfa: String? = null
+
 )
+
+
+
