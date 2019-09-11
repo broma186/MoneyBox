@@ -34,4 +34,7 @@ object Constants {
         val SP_STORAGE : String = "storage"
         val FIVE_MINUTES : Long = 300000
 
+        val PIG_SHOW_UP_FRAME : Int = 109
+        val PIG_ANIMATION_MIN_FRAME: Int = 131
+        val PIG_ANIMATION_MAX_FRAME : Int = 158
 }

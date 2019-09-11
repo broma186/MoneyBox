@@ -21,9 +21,9 @@ data class LoginSession (
     var externalId: String? = null,
 
     @SerializedName("ExpiryInSeconds")
-    var expiryInSeconds: Int? = null,
+    var expiryInSeconds: Int? = null
 
-    var downloadTime: Date? = null
+    //var downloadTime: Date? = null
 
 
 )

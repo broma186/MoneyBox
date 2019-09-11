@@ -59,6 +59,7 @@ class UserAccountsActivity : AppCompatActivity() {
         accountsRecyclerView.layoutManager = accountsViewLayoutManager
     }
 
-
-
+    override fun onBackPressed() {
+        // Do nothing
+    }
 }

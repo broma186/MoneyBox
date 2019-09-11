@@ -17,10 +17,12 @@ import com.example.minimoneybox.Constants.ANIMATED_FRACTION_MAX_CONSTANT
 import com.example.minimoneybox.Constants.AUTH_TOKEN_KEY
 import com.example.minimoneybox.Constants.AUTH_TOKEN_TIME_STAMP
 import com.example.minimoneybox.Constants.BEARER_STR
-import com.example.minimoneybox.Constants.BEARER_TOKEN_KEY
 import com.example.minimoneybox.Constants.EMAIL_REGEX
 import com.example.minimoneybox.Constants.NAME_REGEX
 import com.example.minimoneybox.Constants.PASSWORD_REGEX
+import com.example.minimoneybox.Constants.PIG_ANIMATION_MAX_FRAME
+import com.example.minimoneybox.Constants.PIG_ANIMATION_MIN_FRAME
+import com.example.minimoneybox.Constants.PIG_SHOW_UP_FRAME
 import com.example.minimoneybox.Constants.PLAN_VALUE_KEY
 import com.example.minimoneybox.Constants.PRODUCT_RESPONSES_KEY
 import com.example.minimoneybox.Constants.SP_STORAGE
@@ -59,6 +61,9 @@ class LoginActivity : AppCompatActivity() {
     lateinit var et_name : EditText
     lateinit var pigAnimation : LottieAnimationView
 
+    companion object {
+        val TAG = "LoginActivity"
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -66,72 +71,10 @@ class LoginActivity : AppCompatActivity() {
         setupViews()
     }
 
-
     override fun onStart() {
         super.onStart()
         setupAnimation()
     }
-
-    companion object {
-        val TAG = "LoginActivity"
-    }
-
-    private fun loginUser() {
-        val loginRequest = LoginRequest(Constants.TEMP_EMAIL,
-            Constants.TEMP_PASSWORD, Constants.TEMP_IDFA)
-        val observable = MoneyBoxApiService.loginApiCall().loginUser(loginRequest)
-        observable.subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe({loginResponse: LoginResponse? ->
-                if (loginResponse?.loginSession != null) {
-                    storeAuthTimeStamp()
-                    loadInvestorData(BEARER_STR + loginResponse.loginSession, loginRequest)
-                } else{
-                    val msg = "Failed to log in " + loginRequest.idfa
-                    Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
-                }
-            }, { error -> })
-
-    }
-
-    private fun storeAuthTimeStamp() {
-        this.getSharedPreferences(SP_STORAGE, Context.MODE_PRIVATE).edit().putLong(AUTH_TOKEN_TIME_STAMP, System.currentTimeMillis()).commit()
-    }
-
-
-    private fun loadInvestorData(authToken : String, loginRequest: LoginRequest) {
-        val observable = MoneyBoxApiService.investorApiCall().getInvestorProducts(authToken)
-        observable.subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe({investorResponse: InvestorResponse? ->
-                if (investorResponse?.totalPlanValue != null) {
-                    goToUserAccounts(authToken, loginRequest, investorResponse)
-                } else {
-                    val msg = loginRequest.idfa + " has no accounts"
-                    Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
-                }
-            }, { error ->
-        })
-
-    }
-
-
-    private fun goToUserAccounts(authToken : String, loginRequest: LoginRequest, investorResponse: InvestorResponse) {
-        val intent = Intent(this, UserAccountsActivity::class.java)
-        intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
-        intent.putExtra("email", loginRequest.email)
-        intent.putExtra("password", loginRequest.password)
-        if (!loginRequest.idfa.isEmpty()) {
-            intent.putExtra("idfa", loginRequest.idfa)
-        }
-        intent.putExtra(AUTH_TOKEN_KEY, authToken)
-        intent.putExtra(PLAN_VALUE_KEY, investorResponse.totalPlanValue)
-        intent.putParcelableArrayListExtra(PRODUCT_RESPONSES_KEY, ArrayList(investorResponse.productResponses))
-        startActivity(intent)
-    }
-
-
-
 
     private fun setupViews() {
         btn_sign_in = findViewById(R.id.btn_sign_in)
@@ -144,17 +87,13 @@ class LoginActivity : AppCompatActivity() {
         pigAnimation = findViewById(R.id.animation)
 
         btn_sign_in.setOnClickListener {
-           // if (allFieldsValid()) {
+            if (allFieldsValid()) {
             //    checkAndResetErrorWarnings()
                 Toast.makeText(this, R.string.input_valid, Toast.LENGTH_LONG).show()
-                loginUser()
-          //  }
+                MoneyBoxApiService.loginUser(this)
+            }
         }
-
-
     }
-
-
 
     private fun checkAndResetErrorWarnings() {
         if(!TextUtils.isEmpty(til_email.getError())) {
@@ -195,12 +134,19 @@ class LoginActivity : AppCompatActivity() {
         return allValid
     }
 
+    // Starts the first part of the animation until the pig makes an appearance.
+    private fun setupAnimation() {
+        pigAnimation.setMaxFrame(PIG_SHOW_UP_FRAME) // Stop the animation when the pig shows up.
+        pigAnimation.playAnimation()
+        setupAnimationListener() // Respond to pig showing up, create next animation after.
+    }
+
     /* Creates an animation listener that checks if the pig has showed up. If it has, let the money
      box pat it's pig forever until the activity restarts */
     private fun setupAnimationListener() {
         pigAnimation.addAnimatorUpdateListener({ animation ->
             if (animation.animatedFraction.compareTo(ANIMATED_FRACTION_MAX_CONSTANT) == 0) {
-                pigAnimation.setMinAndMaxFrame(131, 158)
+                pigAnimation.setMinAndMaxFrame(PIG_ANIMATION_MIN_FRAME, PIG_ANIMATION_MAX_FRAME)
                 pigAnimation.repeatCount = LottieDrawable.INFINITE;
                 pigAnimation.repeatMode = LottieDrawable.RESTART;
                 pigAnimation.playAnimation()
@@ -208,13 +154,6 @@ class LoginActivity : AppCompatActivity() {
         })
     }
 
-
-
-    private fun setupAnimation() {
-        pigAnimation.setMaxFrame(109) // Stop the animation when the pig shows up.
-        pigAnimation.playAnimation()
-        setupAnimationListener() // Respond to pig showing up, create next animation after.
-    }
 
 
 }

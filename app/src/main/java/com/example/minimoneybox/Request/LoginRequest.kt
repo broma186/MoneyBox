@@ -19,7 +19,5 @@ interface LoginApiService {
 data class LoginRequest (
     @SerializedName("Email") var email: String,
     @SerializedName("Password") var password: String,
-    @SerializedName("Idfa") var idfa: String,
-    @SerializedName("status") val status: Int = 0
-
+    @SerializedName("Idfa") var idfa: String
 )
