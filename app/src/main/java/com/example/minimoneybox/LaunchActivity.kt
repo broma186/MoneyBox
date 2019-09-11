@@ -6,6 +6,8 @@ import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.view.View
 import android.widget.RelativeLayout
+import com.example.minimoneybox.Constants.LOGIN_INDICATOR
+import com.example.minimoneybox.Constants.NO_LOGIN_DEFAULT
 import com.example.minimoneybox.Request.LoginRequest
 import com.example.minimoneybox.Request.LoginRequestRealm
 import com.example.minimoneybox.api.MoneyBoxApiService
@@ -30,10 +32,10 @@ class LaunchActivity : AppCompatActivity() {
     private fun loginUserIfAuthExpiredOrNonExistent() {
         val lastLoginTime =  getSharedPreferences(Constants.SP_STORAGE, Context.MODE_PRIVATE).getLong(Constants.AUTH_TOKEN_TIME_STAMP, 0)
         val timeMillisBetweenNowAndLastLogin : Long = System.currentTimeMillis() - lastLoginTime
-        if (lastLoginTime > 0 && timeMillisBetweenNowAndLastLogin > Constants.FIVE_MINUTES) { // User has an invalid auth token. Take them to log in screen.
+        if (lastLoginTime > NO_LOGIN_DEFAULT && timeMillisBetweenNowAndLastLogin > Constants.FIVE_MINUTES) { // User has an invalid auth token. Take them to log in screen.
             goToLogin()
         }
-        else if (lastLoginTime < 1) { // User never logged in, take user to login screen.
+        else if (lastLoginTime < LOGIN_INDICATOR) { // User never logged in, take user to login screen.
             goToLogin()
         }
         else { // Log user in again with old credentials from database as authentication hasn't expired yet.

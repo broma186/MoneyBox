@@ -37,4 +37,8 @@ object Constants {
         val PIG_SHOW_UP_FRAME : Int = 109
         val PIG_ANIMATION_MIN_FRAME: Int = 131
         val PIG_ANIMATION_MAX_FRAME : Int = 158
+
+        val NO_LOGIN_DEFAULT : Long = 0
+        val LOGIN_INDICATOR : Long = 1
+        val HELLO_CONSTANT : String = "Hello "
 }

@@ -65,9 +65,6 @@ class LoginActivity : AppCompatActivity() {
     lateinit var et_name : EditText
     lateinit var pigAnimation : LottieAnimationView
 
-    companion object {
-        val TAG = "LoginActivity"
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -101,18 +98,7 @@ class LoginActivity : AppCompatActivity() {
         }
     }
 
-    private fun checkAndResetErrorWarnings() {
-        if(!TextUtils.isEmpty(til_email.getError())) {
-            til_email.setError(null)
-        }
-        if(!TextUtils.isEmpty(til_password.getError())) {
-            til_password.setError(null)
-        }
-        if(!TextUtils.isEmpty(til_name.getError())) {
-            til_name.setError(null)
-        }
-    }
-
+    // Log in field validation, checks regex to make sure input is valid.
     private fun allFieldsValid() : Boolean {
         var allValid = true
 

@@ -23,7 +23,7 @@ class MoneyBoxApplication : Application() {
 
     override fun onCreate() {
         super.onCreate()
-        Realm.init(this) //init realmdb this covers all use of realm    within the project.
+        Realm.init(this)
         val config = RealmConfiguration.Builder()
             .name("merealm.realm")
             .schemaVersion(1)

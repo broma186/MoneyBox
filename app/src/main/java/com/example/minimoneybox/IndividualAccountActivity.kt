@@ -36,10 +36,6 @@ class IndividualAccountActivity : AppCompatActivity(){
         setupViews()
     }
 
-    companion object {
-        val TAG = "IndividualAccount"
-    }
-
     private fun setupViews() {
 
         val userAccountsIntentExtras : Bundle? = intent.extras;

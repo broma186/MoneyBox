@@ -10,10 +10,12 @@ import android.widget.TextView
 import com.example.minimoneybox.Adaptors.AccountsListAdapter
 import com.example.minimoneybox.Constants.AUTH_TOKEN_KEY
 import com.example.minimoneybox.Constants.FULL_NAME_KEY
+import com.example.minimoneybox.Constants.HELLO_CONSTANT
 import com.example.minimoneybox.Constants.PLAN_VALUE_KEY
 import com.example.minimoneybox.response.ProductResponse
 import org.w3c.dom.Text
 
+// Displays the logged in user's investments scemes and various accounts.
 class UserAccountsActivity : AppCompatActivity() {
 
     private lateinit var helloFullName : TextView
@@ -37,7 +39,7 @@ class UserAccountsActivity : AppCompatActivity() {
         var loginIntentExtras : Bundle? = intent.extras;
         if (loginIntentExtras?.containsKey(FULL_NAME_KEY)!!) {
             helloFullName.visibility = View.VISIBLE
-            helloFullName.setText("Hello " + loginIntentExtras.getString(FULL_NAME_KEY) + "!")
+            helloFullName.setText(HELLO_CONSTANT + loginIntentExtras.getString(FULL_NAME_KEY) + "!")
         }
         planValueTitle = findViewById(R.id.total_plan_value_title)
         planValueText = findViewById(R.id.total_plan_value_text)
@@ -59,6 +61,7 @@ class UserAccountsActivity : AppCompatActivity() {
         accountsRecyclerView.layoutManager = accountsViewLayoutManager
     }
 
+    // Take the user back to the log in screen? No
     override fun onBackPressed() {
         // Do nothing
     }
