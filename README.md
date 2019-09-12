@@ -7,12 +7,17 @@ Create a mini version of the Moneybox app that will allow existing users to logi
 In this repository you will find LoginActivity that allows users to enter their username, password and optionally their name.  We have implemented a basic screen for you that validates username, password and name against simple regular expressions but makes no calls to the API.
 
 Unfortunately this screen has 3 bugs raised by our testers that they want you to fix and are listed below.  If you are struggling to fix any of these bugs, please give it your best attempt and then move onto the next bug or task.
+ 
+Bug 3 -For the animation I set a max frame, then played the animation so that the animation stopps when the pig walks into the frame.
+I then set an animation listener so that the fellow puts the money into the piggy bank repetitively. I set a min/max frame inside the animation listener block and then set an infinite repeat count with restart repeat mode.
+
 
 ### Bug 1 - Layout does not look as expected
 
 Please re-arrange the views in the LoginActivity to match the expected layout.
 
 ![](/images/correct_layout.png)
+
 
 ### Bug 2 - Validation is incorrect
 If the input entered by the user is correct then they should see a toast saying “Input is valid!”.  However if it is not correct we should show an error on the field that is incorrect.  Below is the following validation logic:
@@ -22,6 +27,9 @@ If the input entered by the user is correct then they should see a toast saying 
 - Name is optional, but if it contains any value it should match NAME_REGEX
 
 There is some validation logic in LoginActivity, but it is currently incorrect. Please implement this feature to match this logic.
+
+/*
+The full name regex had to be changed to be optional, and all fields would fail if only one field was wrong. Now if you have three failures, you can fix one at a time and the warning will clear.*/
 
 ### Bug 3 - Animation is looping incorrectly
 
@@ -36,6 +44,11 @@ To create animation in our app we use a helpful library called Lottie.  This has
 
 There is lots of helpful documentation on Lottie [here](http://airbnb.io/lottie/#/android).  Please take a look at this page for information on how to loop the animation, play from a min and max frame and detect when an animation ends.
 
+
+/*
+I changed the constraints in the constraint layout xml files. I had to change margins and centrally align and lift up the sign up button, as well as position the animation correctly.
+*/
+
 ## Part B - Add 2 new screens
 
 We now want to give some useful functionality to our users. To allow them to log into the app, view and edit their account using our sandbox API.
@@ -48,6 +61,14 @@ This screen should be shown after the user has successfully logged in and should
 - Show all of those account's **'PlanValue'**.
 - Shhow all of those account's **'Moneybox'** total.
 
+/*
+Used an AppCompatActivity just like for the log in screen. I start off by declaring the textviews followed by retrieving the values passed through from the LoginActivity intent and setting the accounts to display. The investor data is pulled down after logging in success and passed through to user accounts. The auth token is not stored in shared preferences but the time of log in success is. This is used to compare the time diff with now so I know when 5 minutes is up. If 5 minutes has elipsed, the app goes back to the login screen but only when the app is reloaded is this checked. There is a new main/launch activity called launchactivity which decides whether to display the user accounts first (If a login request has already been successful and stored) or the login screen (due to auth token invaliditiy or no auth token at all).
+The user's accounts are displayed in a recyclerView list with an adapter carrying view holders. This sets up the textviews and image and provides an intent on click to the next screen.
+The login request details are stored in Realm, and are used so that the user can open the app up with a valid auth token and not have to log in again.
+Every network request uses interfaces, RxJava, okHttp3 and retrofit as this seems to be the most readable way to do network requests for Android.
+I also used a GsonConverter for the Http3 JSON serialization and an HTTPLogging interceptor so I could read server responses.
+*/
+
 ### Screen 3 - Individual account screen
 If a user selects one of those accounts, they should then be taken to this screen.  This screen should have the following functionality:
 - Show the **'Name'** of the account.
@@ -58,6 +79,11 @@ If a user selects one of those accounts, they should then be taken to this scree
 A prototype wireframe of all 3 screens is provided as a guideline. You are free to change any elements of the screen and provide additional information if you wish.
 
 ![](/images/wireframe.png)
+
+/*
+ The plan value/money box is displayed in textviews on the third screen. The top up button is fixed to top up 10 pounds at a time.
+Once the user has topped up, they are greeted to a toast displaying the success. The moneybox total updates immediately. If the user presses the back button, they will end up on the accounts screen again, where the investor deets are downloaded on postresume again. This is done so that we can have an up to date moneybox value reflected in the money box total of each account. After pulling the data again, the adapter for the recycler view is notified and the new amount is displayed.
+*/
 
 ## What we are looking for:
  - An android application written in either Java or Kotlin.
