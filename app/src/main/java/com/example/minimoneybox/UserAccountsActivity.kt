@@ -83,7 +83,9 @@ class UserAccountsActivity : AppCompatActivity() {
         // Do nothing
     }
 
-
+/*
+Needs to be overridden so that the account data can be reloaded on back press from the individual account screen.
+ */
     override fun onPostResume() {
         super.onPostResume()
 

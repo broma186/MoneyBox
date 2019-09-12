@@ -65,13 +65,6 @@ class IndividualAccountActivity : AppCompatActivity(){
 
     }
 
-    override fun onBackPressed() {
-        intent.putExtra(Constants.ACCOUNT_RESULT, account)
-        intent.putExtra(AUTH_TOKEN_KEY, intent.getStringExtra(AUTH_TOKEN_KEY))
-        setResult(RESULT_OK, intent);
-        finish()
-    }
-
     private fun doTopUp() {
         val observable = MoneyBoxApiService.topUpApiCall().topUp(intent.getStringExtra(AUTH_TOKEN_KEY), TopUpRequest(FIXED_TOP_UP_AMOUNT, account?.id))
         observable.subscribeOn(Schedulers.io())

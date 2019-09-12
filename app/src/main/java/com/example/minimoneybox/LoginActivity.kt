@@ -88,13 +88,15 @@ class LoginActivity : AppCompatActivity() {
         pigAnimation = findViewById(R.id.animation)
 
         btn_sign_in.setOnClickListener {
-           // if (allFieldsValid()) {
-            Toast.makeText(this, R.string.input_valid, Toast.LENGTH_LONG).show()
-          //  MoneyBoxApiService.loginUser(this, LoginRequestRealm.getLoginRequest(et_email.text.toString(),
-           //     et_password.text.toString(), et_name.text.toString()))
-            MoneyBoxApiService.loginUser(this, LoginRequestRealm.getLoginRequest(
-                TEMP_EMAIL, TEMP_PASSWORD, TEMP_IDFA))
-          //  }
+            if (allFieldsValid()) {
+                Toast.makeText(this, R.string.logging_in, Toast.LENGTH_LONG).show()
+                MoneyBoxApiService.loginUser(
+                    this, LoginRequestRealm.getLoginRequest(
+                        et_email.text.toString(),
+                        et_password.text.toString(), et_name.text.toString()
+                    )
+                )
+            }
         }
     }
 

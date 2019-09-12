@@ -44,4 +44,5 @@ object Constants {
 
         val PASS_BACK_MONEYBOX_RESULT : Int = 1
         val ACCOUNT_RESULT : String = "account"
+        val LAST_USER_EMAIL : String = "last_user_email"
 }

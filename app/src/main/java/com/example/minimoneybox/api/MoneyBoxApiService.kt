@@ -68,10 +68,11 @@ object MoneyBoxApiService {
             .subscribe({loginResponse: LoginResponse? ->
                 if (loginResponse?.loginSession != null) {
                     // Only write successful realm user credentials to database if that user doesn't exist.
-                    if (LoginRequestRealm.retrieveLoginRequestFromDatabase() == null) {
+                    if (LoginRequestRealm.retrieveLoginRequestFromDatabase(loginRequest.email) == null) {
                         LoginRequestRealm.writeLoginRequestToDatabase(loginRequest)
                     }
                     storeAuthTimeStamp(context) // Used for checking expired auth token.
+                    storeLastUserEmail(context, loginRequest.email)
                     loadInvestorData(context,Constants.BEARER_STR + loginResponse?.loginSession?.bearerToken, loginRequest)
                 } else{
                     val msg = "Failed to log in " + loginRequest.idfa
@@ -91,6 +92,12 @@ object MoneyBoxApiService {
         context.getSharedPreferences(Constants.SP_STORAGE, Context.MODE_PRIVATE).edit().putLong(
             Constants.AUTH_TOKEN_TIME_STAMP, System.currentTimeMillis()).commit()
     }
+
+    private fun storeLastUserEmail(context: Context, email : String?) {
+        context.getSharedPreferences(Constants.SP_STORAGE, Context.MODE_PRIVATE).edit().putString(
+            Constants.LAST_USER_EMAIL, email).commit()
+    }
+
 
     /*
         Gets investor account info and then takes user to accounts screen to present information if there is

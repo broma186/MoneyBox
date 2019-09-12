@@ -19,7 +19,7 @@ open class LoginRequestRealm : RealmObject() {
         fun writeLoginRequestToDatabase(loginRequest: LoginRequest) {
             val realm: Realm = Realm.getDefaultInstance()
             realm.beginTransaction()
-            val loginRequestRealm: LoginRequestRealm = realm.createObject(LoginRequestRealm::class.java, Constants.TEMP_EMAIL)
+            val loginRequestRealm: LoginRequestRealm = realm.createObject(LoginRequestRealm::class.java, loginRequest.email)
             loginRequestRealm.password = loginRequest.password
             loginRequestRealm.idfa = loginRequest.idfa
             realm.copyToRealmOrUpdate(loginRequestRealm)
@@ -29,9 +29,9 @@ open class LoginRequestRealm : RealmObject() {
         /*
             Gets a login request from using the specified primary key
          */
-        fun retrieveLoginRequestFromDatabase() : LoginRequestRealm? {
+        fun retrieveLoginRequestFromDatabase(email : String?) : LoginRequestRealm? {
             return Realm.getDefaultInstance().where(LoginRequestRealm::class.java)
-                .equalTo("email", Constants.TEMP_EMAIL)
+                .equalTo("email", email)
                 .findFirst()
         }
 

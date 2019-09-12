@@ -57,7 +57,7 @@ class AccountsListAdapter(private val mContext: AppCompatActivity, private var p
                 intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
                 intent.putExtra(PRODUCT_RESPONSE_KEY, products[position])
                 intent.putExtra(AUTH_TOKEN_KEY, authToken)
-                mContext.startActivityForResult(intent, PASS_BACK_MONEYBOX_RESULT)
+                mContext.startActivity(intent)
         }
 
         override fun getItemCount() = products.size
