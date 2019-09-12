@@ -3,6 +3,7 @@ package com.example.minimoneybox.Request
 import com.example.minimoneybox.response.TopUpResponse
 import com.google.gson.annotations.SerializedName
 import io.reactivex.Observable
+import okhttp3.Response
 import okhttp3.ResponseBody
 import retrofit2.http.Body
 import retrofit2.http.Headers
@@ -18,7 +19,7 @@ interface TopUpApiService {
         "apiVersion: 3.0.0"
     )
     @POST("oneoffpayments")
-    fun topUp(@Query("Authorization") authorizationKey: String?, @Body topUpRequest: TopUpRequest): Observable<TopUpResponse>
+    fun topUp(@Query("Authorization") authorizationKey: String, @Body topUpRequest: TopUpRequest): Observable<TopUpResponse>
 }
 
 data class TopUpRequest (

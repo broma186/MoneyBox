@@ -14,6 +14,8 @@ open class LoginRequestRealm : RealmObject() {
 
     companion object {
 
+        /* Takes a LoginRequest POJO as a parameter and writes it to the database as
+            a LoginRequestRealm object.*/
         fun writeLoginRequestToDatabase(loginRequest: LoginRequest) {
             val realm: Realm = Realm.getDefaultInstance()
             realm.beginTransaction()
@@ -24,12 +26,18 @@ open class LoginRequestRealm : RealmObject() {
             realm.commitTransaction()
         }
 
+        /*
+            Gets a login request from using the specified primary key
+         */
         fun retrieveLoginRequestFromDatabase() : LoginRequestRealm? {
             return Realm.getDefaultInstance().where(LoginRequestRealm::class.java)
                 .equalTo("email", Constants.TEMP_EMAIL)
                 .findFirst()
         }
 
+        /*
+         Creates and returns a POJO using the given credentials.
+        */
         fun getLoginRequest(email : String?, password : String?, idfa : String?) : LoginRequest {
             var loginRequest : LoginRequest = LoginRequest()
             loginRequest.email = email

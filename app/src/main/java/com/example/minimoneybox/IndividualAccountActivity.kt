@@ -6,6 +6,7 @@ import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.TextView
+import android.widget.Toast
 import com.example.minimoneybox.Constants.AUTH_TOKEN_KEY
 import com.example.minimoneybox.Constants.FIXED_TOP_UP_AMOUNT
 import com.example.minimoneybox.Constants.PRODUCT_RESPONSE_KEY
@@ -17,6 +18,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import okhttp3.Response
 import okhttp3.ResponseBody
+import java.util.*
 
 class IndividualAccountActivity : AppCompatActivity(){
 
@@ -26,7 +28,6 @@ class IndividualAccountActivity : AppCompatActivity(){
     private lateinit var moneyBoxTitle : TextView
     private lateinit var moneyBoxValue : TextView
     private var account: ProductResponse? = null
-    private var authToken : String? = null
     private lateinit var topUpButton : Button
 
 
@@ -41,7 +42,6 @@ class IndividualAccountActivity : AppCompatActivity(){
         val userAccountsIntentExtras : Bundle? = intent.extras;
         if (userAccountsIntentExtras?.containsKey(PRODUCT_RESPONSE_KEY)!!) {
             account = intent.getParcelableExtra(PRODUCT_RESPONSE_KEY)
-            authToken = intent.getStringExtra(AUTH_TOKEN_KEY)
             accountName = findViewById(R.id.individual_account_name)
             accountName.setText(account?.product?.friendlyName)
 
@@ -64,14 +64,19 @@ class IndividualAccountActivity : AppCompatActivity(){
 
     }
 
+
+
     private fun doTopUp() {
-        val observable = MoneyBoxApiService.topUpApiCall().topUp(authToken, TopUpRequest(FIXED_TOP_UP_AMOUNT, account?.product?.id))
+        val observable = MoneyBoxApiService.topUpApiCall().topUp(intent.getStringExtra(AUTH_TOKEN_KEY), TopUpRequest(FIXED_TOP_UP_AMOUNT, account?.product?.id))
         observable.subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe({ topUpResponse: TopUpResponse? ->
-                Log.d(TAG,"top up success, first product id is: " + topUpResponse?.text)
+            .subscribe({ topUpResponse: TopUpResponse ->
+                moneyBoxValue.setText(topUpResponse?.moneyBox)
+                val msg = "Sent " + Currency.getInstance(Locale.UK).getCurrencyCode() + FIXED_TOP_UP_AMOUNT + " to account " + account?.product?.friendlyName
+                Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
             }, { error ->
-                Log.d(TAG,"top up failure: " + error?.message)
+                val msg = "Failed to top up " + account?.product?.friendlyName + " with error: " + error.message
+                Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
             })
     }
 

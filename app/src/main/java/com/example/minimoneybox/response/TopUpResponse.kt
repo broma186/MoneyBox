@@ -5,5 +5,5 @@ import com.google.gson.annotations.SerializedName
 
 
 data class TopUpResponse (
-    @SerializedName("text") val text: String? = null
+    @SerializedName("Moneybox") var moneyBox: String? = null
 )
