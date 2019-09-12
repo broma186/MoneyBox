@@ -2,9 +2,11 @@ package com.example.minimoneybox.response
 
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
+import java.util.*
 
 data class LoginResponse (
-    @SerializedName("Session") val loginSession: LoginSession? = null
+    @SerializedName("Session")
+    var loginSession: LoginSession? = null
 )
 
 data class LoginSession (
@@ -20,6 +22,8 @@ data class LoginSession (
 
     @SerializedName("ExpiryInSeconds")
     var expiryInSeconds: Int? = null
+
+    //var downloadTime: Date? = null
 
 
 )

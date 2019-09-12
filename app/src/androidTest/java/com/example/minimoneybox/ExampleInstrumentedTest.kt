@@ -4,9 +4,12 @@ import android.support.test.InstrumentationRegistry
 import android.support.test.runner.AndroidJUnit4
 import android.util.Log
 import android.widget.Toast
+import com.example.minimoneybox.Constants.BEARER_STR
 import com.example.minimoneybox.Request.LoginRequest
+import com.example.minimoneybox.Request.TopUpRequest
 import com.example.minimoneybox.api.MoneyBoxApiService
 import com.example.minimoneybox.response.InvestorResponse
+import com.example.minimoneybox.response.TopUpResponse
 
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -57,28 +60,23 @@ class ExampleInstrumentedTest {
 
     @Test
     fun getInvestorProducts() {
-        val loginRequest : LoginRequest = LoginRequest(Constants.TEMP_EMAIL,
-            Constants.TEMP_PASSWORD, Constants.TEMP_IDFA)
-        val observable = MoneyBoxApiService.loginApiCall().loginUser(loginRequest)
+        val observableInv = MoneyBoxApiService.investorApiCall().getInvestorProducts("Bearer TsMWRkbrcu3NGrpf84gi2+pg0iOMVymyKklmkY0oI84=")
+        observableInv.subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({investorResponse: InvestorResponse? ->
+                assertTrue(investorResponse?.totalPlanValue != null)
+            }, { error -> })
+    }
+
+    @Test
+    fun topUpPayment() {
+        val observable = MoneyBoxApiService.topUpApiCall().topUp("Bearer TsMWRkbrcu3NGrpf84gi2+pg0iOMVymyKklmkY0oI84=", TopUpRequest(10, 1))
         observable.subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe({ loginResponse ->
-                val authToken : String? = loginResponse?.loginSession?.bearerToken
-                if (authToken != null) {
-                    val observable = MoneyBoxApiService.investorApiCall().getInvestorProducts("Bearer " + authToken)
-                    observable.subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe({investorResponse: InvestorResponse? ->
-                            assertTrue(investorResponse?.totalPlanValue != null)
-                        }, { error ->
-                            fail()
-                            Log.d(LoginActivity.TAG,"getinvestor failure: " + error?.message)
-                        })
-                    }
+            .subscribe({ topUpResponse: TopUpResponse? ->
+                assertTrue(topUpResponse != null)
             }, { error ->
                 fail()
-                Log.d(LoginActivity.TAG,"login failure: " + error?.message)
             })
-
     }
 }

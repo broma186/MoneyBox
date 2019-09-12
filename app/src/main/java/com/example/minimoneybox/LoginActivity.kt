@@ -1,10 +1,12 @@
 package com.example.minimoneybox
 
+import android.content.Context
 import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.design.widget.TextInputLayout
 import android.text.TextUtils
+import android.util.Base64
 import android.util.Log
 import android.widget.Button
 import android.widget.EditText
@@ -12,12 +14,23 @@ import android.widget.Toast
 import com.airbnb.lottie.LottieAnimationView
 import com.airbnb.lottie.LottieDrawable
 import com.example.minimoneybox.Constants.ANIMATED_FRACTION_MAX_CONSTANT
+import com.example.minimoneybox.Constants.AUTH_TOKEN_KEY
+import com.example.minimoneybox.Constants.AUTH_TOKEN_TIME_STAMP
+import com.example.minimoneybox.Constants.BEARER_STR
 import com.example.minimoneybox.Constants.EMAIL_REGEX
 import com.example.minimoneybox.Constants.NAME_REGEX
 import com.example.minimoneybox.Constants.PASSWORD_REGEX
+import com.example.minimoneybox.Constants.PIG_ANIMATION_MAX_FRAME
+import com.example.minimoneybox.Constants.PIG_ANIMATION_MIN_FRAME
+import com.example.minimoneybox.Constants.PIG_SHOW_UP_FRAME
 import com.example.minimoneybox.Constants.PLAN_VALUE_KEY
 import com.example.minimoneybox.Constants.PRODUCT_RESPONSES_KEY
+import com.example.minimoneybox.Constants.SP_STORAGE
+import com.example.minimoneybox.Constants.TEMP_EMAIL
+import com.example.minimoneybox.Constants.TEMP_IDFA
+import com.example.minimoneybox.Constants.TEMP_PASSWORD
 import com.example.minimoneybox.Request.LoginRequest
+import com.example.minimoneybox.Request.LoginRequestRealm
 import com.example.minimoneybox.api.MoneyBoxApiService
 import com.example.minimoneybox.response.InvestorResponse
 import com.example.minimoneybox.response.LoginResponse
@@ -26,8 +39,15 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import okhttp3.Response
 import okhttp3.ResponseBody
+import java.time.LocalDateTime
+import java.util.*
 import java.util.regex.Pattern
-
+import javax.crypto.Cipher
+import javax.crypto.KeyGenerator
+import javax.crypto.SecretKey
+import javax.crypto.spec.IvParameterSpec
+import javax.crypto.spec.SecretKeySpec
+import kotlin.collections.ArrayList
 
 
 /**
@@ -52,72 +72,10 @@ class LoginActivity : AppCompatActivity() {
         setupViews()
     }
 
-
-
     override fun onStart() {
         super.onStart()
         setupAnimation()
     }
-
-    companion object {
-        val TAG = "LoginActivity"
-    }
-
-    private fun loginUser() {
-        val loginRequest : LoginRequest = LoginRequest(Constants.TEMP_EMAIL,
-            Constants.TEMP_PASSWORD, Constants.TEMP_IDFA)
-        val observable = MoneyBoxApiService.loginApiCall().loginUser(loginRequest)
-        observable.subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe({loginResponse: LoginResponse? ->
-                Log.d(TAG, "login response recieved")
-                //TODO: If bearer token is different, store and use that instead.
-                val bearerToken : String? = loginResponse?.loginSession?.bearerToken
-                if (bearerToken != null) {
-                    loadInvestorData(bearerToken, loginRequest)
-                } else {
-                    //TODO display toast saying user failed to login, They must input again.
-                }
-            }, { error ->
-                Log.d(LoginActivity.TAG,"login failure: " + error?.message)
-            })
-
-    }
-
-    private fun loadInvestorData(authToken : String?, loginRequest: LoginRequest) {
-        val observable = MoneyBoxApiService.investorApiCall().getInvestorProducts("Bearer " + authToken)
-        observable.subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe({investorResponse: InvestorResponse? ->
-                Log.d(LoginActivity.TAG,"getInvestor success, first product id is: " + investorResponse?.productResponses?.get(0)?.id)
-                if (investorResponse?.totalPlanValue != null) {
-                    goToUserAccounts(loginRequest, investorResponse)
-                } else {
-                    val msg = loginRequest.idfa + " has no accounts"
-                    Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
-                }
-            }, { error ->
-            Log.d(LoginActivity.TAG,"getinvestor failure: " + error?.message)
-        })
-
-    }
-
-
-    private fun goToUserAccounts(loginRequest: LoginRequest, investorResponse: InvestorResponse) {
-        val intent = Intent(this, UserAccountsActivity::class.java)
-        intent.putExtra("email", loginRequest.email)
-        intent.putExtra("password", loginRequest.password)
-        if (!loginRequest.idfa.isEmpty()) {
-            intent.putExtra("idfa", loginRequest.idfa)
-        }
-
-        intent.putExtra(PLAN_VALUE_KEY, investorResponse.totalPlanValue)
-        intent.putParcelableArrayListExtra(PRODUCT_RESPONSES_KEY, ArrayList(investorResponse.productResponses))
-        startActivity(intent)
-    }
-
-
-
 
     private fun setupViews() {
         btn_sign_in = findViewById(R.id.btn_sign_in)
@@ -130,30 +88,19 @@ class LoginActivity : AppCompatActivity() {
         pigAnimation = findViewById(R.id.animation)
 
         btn_sign_in.setOnClickListener {
-           // if (allFieldsValid()) {
-            //    checkAndResetErrorWarnings()
-                Toast.makeText(this, R.string.input_valid, Toast.LENGTH_LONG).show()
-                loginUser()
-          //  }
-        }
-
-
-    }
-
-
-
-    private fun checkAndResetErrorWarnings() {
-        if(!TextUtils.isEmpty(til_email.getError())) {
-            til_email.setError(null)
-        }
-        if(!TextUtils.isEmpty(til_password.getError())) {
-            til_password.setError(null)
-        }
-        if(!TextUtils.isEmpty(til_name.getError())) {
-            til_name.setError(null)
+            if (allFieldsValid()) {
+                Toast.makeText(this, R.string.logging_in, Toast.LENGTH_LONG).show()
+                MoneyBoxApiService.loginUser(
+                    this, LoginRequestRealm.getLoginRequest(
+                        et_email.text.toString(),
+                        et_password.text.toString(), et_name.text.toString()
+                    )
+                )
+            }
         }
     }
 
+    // Log in field validation, checks regex to make sure input is valid.
     private fun allFieldsValid() : Boolean {
         var allValid = true
 
@@ -181,12 +128,19 @@ class LoginActivity : AppCompatActivity() {
         return allValid
     }
 
+    // Starts the first part of the animation until the pig makes an appearance.
+    private fun setupAnimation() {
+        pigAnimation.setMaxFrame(PIG_SHOW_UP_FRAME) // Stop the animation when the pig shows up.
+        pigAnimation.playAnimation()
+        setupAnimationListener() // Respond to pig showing up, create next animation after.
+    }
+
     /* Creates an animation listener that checks if the pig has showed up. If it has, let the money
      box pat it's pig forever until the activity restarts */
     private fun setupAnimationListener() {
         pigAnimation.addAnimatorUpdateListener({ animation ->
             if (animation.animatedFraction.compareTo(ANIMATED_FRACTION_MAX_CONSTANT) == 0) {
-                pigAnimation.setMinAndMaxFrame(131, 158)
+                pigAnimation.setMinAndMaxFrame(PIG_ANIMATION_MIN_FRAME, PIG_ANIMATION_MAX_FRAME)
                 pigAnimation.repeatCount = LottieDrawable.INFINITE;
                 pigAnimation.repeatMode = LottieDrawable.RESTART;
                 pigAnimation.playAnimation()
@@ -194,13 +148,6 @@ class LoginActivity : AppCompatActivity() {
         })
     }
 
-
-
-    private fun setupAnimation() {
-        pigAnimation.setMaxFrame(109) // Stop the animation when the pig shows up.
-        pigAnimation.playAnimation()
-        setupAnimationListener() // Respond to pig showing up, create next animation after.
-    }
 
 
 }
