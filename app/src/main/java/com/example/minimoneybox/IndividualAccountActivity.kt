@@ -1,5 +1,6 @@
 package com.example.minimoneybox
 
+import android.location.Location
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
@@ -65,11 +66,10 @@ class IndividualAccountActivity : AppCompatActivity(){
     }
 
     override fun onBackPressed() {
-        super.onBackPressed()
-      /*  intent.putExtra("Moneybox", moneyBoxValue.text.toString())
-        intent.putExtra("")
+        intent.putExtra(Constants.ACCOUNT_RESULT, account)
+        intent.putExtra(AUTH_TOKEN_KEY, intent.getStringExtra(AUTH_TOKEN_KEY))
         setResult(RESULT_OK, intent);
-        finish()*/
+        finish()
     }
 
     private fun doTopUp() {
@@ -77,6 +77,7 @@ class IndividualAccountActivity : AppCompatActivity(){
         observable.subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({ topUpResponse: TopUpResponse ->
+                account?.moneyBox = topUpResponse?.moneyBox
                 moneyBoxValue.setText(topUpResponse?.moneyBox)
                 val msg = "Sent " + Currency.getInstance(Locale.UK).getCurrencyCode() + FIXED_TOP_UP_AMOUNT + " to account " + account?.product?.friendlyName
                 Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()

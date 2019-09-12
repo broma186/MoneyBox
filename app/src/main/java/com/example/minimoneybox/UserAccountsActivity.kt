@@ -12,10 +12,19 @@ import com.example.minimoneybox.Adaptors.AccountsListAdapter
 import com.example.minimoneybox.Constants.AUTH_TOKEN_KEY
 import com.example.minimoneybox.Constants.FULL_NAME_KEY
 import com.example.minimoneybox.Constants.HELLO_CONSTANT
-import com.example.minimoneybox.Constants.MONEYBOX_RESULT
 import com.example.minimoneybox.Constants.PLAN_VALUE_KEY
 import com.example.minimoneybox.response.ProductResponse
 import org.w3c.dom.Text
+import android.R.attr.data
+import android.app.Activity
+import android.util.Log
+import android.widget.Toast
+import com.example.minimoneybox.Constants.ACCOUNT_RESULT
+import com.example.minimoneybox.api.MoneyBoxApiService
+import com.example.minimoneybox.response.InvestorResponse
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
+
 
 // Displays the logged in user's investments scemes and various accounts.
 class UserAccountsActivity : AppCompatActivity() {
@@ -34,6 +43,12 @@ class UserAccountsActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_user_accounts)
         setupViews()
+    }
+
+    fun updateAccounts(newList : ArrayList<ProductResponse>) {
+        accountList = newList
+        setupAccountsList()
+        accountsRecyclerAdapter.notifyDataSetChanged()
     }
 
     private fun setupViews() {
@@ -68,10 +83,18 @@ class UserAccountsActivity : AppCompatActivity() {
         // Do nothing
     }
 
-    override fun onActivityReenter(resultCode: Int, data: Intent?) {
-        super.onActivityReenter(resultCode, data)
-        if (intent.getStringExtra(MONEYBOX_RESULT) != null) {
 
-        }
+    override fun onPostResume() {
+        super.onPostResume()
+
+        val observable = MoneyBoxApiService.investorApiCall().getInvestorProducts(intent.getStringExtra(
+            AUTH_TOKEN_KEY))
+        observable.subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({investorResponse: InvestorResponse? ->
+                if (investorResponse?.totalPlanValue != null) {
+                    updateAccounts(ArrayList(investorResponse.productResponses))
+                }
+            }, { error -> })
     }
 }

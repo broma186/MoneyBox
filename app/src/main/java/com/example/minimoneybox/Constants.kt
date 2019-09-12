@@ -43,5 +43,5 @@ object Constants {
         val HELLO_CONSTANT : String = "Hello "
 
         val PASS_BACK_MONEYBOX_RESULT : Int = 1
-        val MONEYBOX_RESULT : String = "Moneybox"
+        val ACCOUNT_RESULT : String = "account"
 }

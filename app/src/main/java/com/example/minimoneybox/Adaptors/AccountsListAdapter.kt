@@ -21,16 +21,14 @@ import android.util.Log
 import com.example.minimoneybox.Constants.AUTH_TOKEN_KEY
 import com.example.minimoneybox.Constants.PASS_BACK_MONEYBOX_RESULT
 
-
 /*
 The adapter used for the user accounts screen's recyclerView.
  */
-class AccountsListAdapter(private val mContext: AppCompatActivity, private val products: ArrayList<ProductResponse>, private val authToken: String?) :
+class AccountsListAdapter(private val mContext: AppCompatActivity, private var products: ArrayList<ProductResponse>, private val authToken: String?) :
         RecyclerView.Adapter<AccountsListAdapter.AccountsViewHolder>() {
 
         private val inflater: LayoutInflater = LayoutInflater.from(mContext)
         private var itemView: View? = null
-
 
         override fun onCreateViewHolder(parent: ViewGroup,
                                         viewType: Int): AccountsListAdapter.AccountsViewHolder {
@@ -50,6 +48,8 @@ class AccountsListAdapter(private val mContext: AppCompatActivity, private val p
                         takeUserToIndividualAccount(position)
                 })
         }
+
+
 
         // Takes user to the account selected on individual accounts screen.
         fun takeUserToIndividualAccount(position: Int) {
