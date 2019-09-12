@@ -41,4 +41,7 @@ object Constants {
         val NO_LOGIN_DEFAULT : Long = 0
         val LOGIN_INDICATOR : Long = 1
         val HELLO_CONSTANT : String = "Hello "
+
+        val PASS_BACK_MONEYBOX_RESULT : Int = 1
+        val MONEYBOX_RESULT : String = "Moneybox"
 }

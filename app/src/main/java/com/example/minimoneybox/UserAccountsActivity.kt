@@ -1,5 +1,6 @@
 package com.example.minimoneybox
 
+import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
@@ -11,6 +12,7 @@ import com.example.minimoneybox.Adaptors.AccountsListAdapter
 import com.example.minimoneybox.Constants.AUTH_TOKEN_KEY
 import com.example.minimoneybox.Constants.FULL_NAME_KEY
 import com.example.minimoneybox.Constants.HELLO_CONSTANT
+import com.example.minimoneybox.Constants.MONEYBOX_RESULT
 import com.example.minimoneybox.Constants.PLAN_VALUE_KEY
 import com.example.minimoneybox.response.ProductResponse
 import org.w3c.dom.Text
@@ -64,5 +66,12 @@ class UserAccountsActivity : AppCompatActivity() {
     // Take the user back to the log in screen? No
     override fun onBackPressed() {
         // Do nothing
+    }
+
+    override fun onActivityReenter(resultCode: Int, data: Intent?) {
+        super.onActivityReenter(resultCode, data)
+        if (intent.getStringExtra(MONEYBOX_RESULT) != null) {
+
+        }
     }
 }

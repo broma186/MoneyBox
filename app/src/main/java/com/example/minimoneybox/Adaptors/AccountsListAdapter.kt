@@ -2,6 +2,7 @@ package com.example.minimoneybox.Adaptors
 
 import android.content.Context
 import android.content.Intent
+import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.RecyclerView
 import android.util.JsonToken
 import android.view.LayoutInflater
@@ -18,50 +19,46 @@ import kotlinx.android.synthetic.main.layout_accounts_item.view.*
 import android.widget.Toast
 import android.util.Log
 import com.example.minimoneybox.Constants.AUTH_TOKEN_KEY
+import com.example.minimoneybox.Constants.PASS_BACK_MONEYBOX_RESULT
 
 
-class AccountsListAdapter(private val mContext: Context, private val products: ArrayList<ProductResponse>, private val authToken: String?) :
+/*
+The adapter used for the user accounts screen's recyclerView.
+ */
+class AccountsListAdapter(private val mContext: AppCompatActivity, private val products: ArrayList<ProductResponse>, private val authToken: String?) :
         RecyclerView.Adapter<AccountsListAdapter.AccountsViewHolder>() {
 
-        private val TAG: String = "AccountsListAdapter"
         private val inflater: LayoutInflater = LayoutInflater.from(mContext)
         private var itemView: View? = null
 
-        // Create new views (invoked by the layout manager)
+
         override fun onCreateViewHolder(parent: ViewGroup,
                                         viewType: Int): AccountsListAdapter.AccountsViewHolder {
-                // create a new view
-                // val textView = LayoutInflater.from(parent.context).inflate(R.layout.my_text_view, parent, false) as TextView
-                // set the view's size, margins, paddings and layout parameters
                 itemView = inflater.inflate(com.example.minimoneybox.R.layout.layout_accounts_item, parent, false)
                 return AccountsViewHolder(itemView!!)
         }
 
-        // Provide a reference to the views for each data item
-        // Complex data items may need more than one view per item, and
-        // you provide access to all the views for a data item in a view holder.
-        // Each data item is just a string in this case that is shown in a TextView.
-        class AccountsViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        class AccountsViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {}
 
-        }
-
-
-
-        // Replace the contents of a view (invoked by the layout manager)
         override fun onBindViewHolder(holder: AccountsViewHolder, position: Int) {
                 holder.itemView.account_name.text = products[position].product?.friendlyName
                 holder.itemView.plan_value_value.text = products[position].planValue
                 holder.itemView.money_box_value.text = products[position].moneyBox
 
+
                 holder.itemView.setOnClickListener(View.OnClickListener { v ->
-                        val intent = Intent(mContext, IndividualAccountActivity::class.java)
-                        intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
-                        intent.putExtra(PRODUCT_RESPONSE_KEY, products[position])
-                        intent.putExtra(AUTH_TOKEN_KEY, authToken)
-                        mContext.startActivity(intent)
+                        takeUserToIndividualAccount(position)
                 })
         }
 
-        // Return the size of your dataset (invoked by the layout manager)
+        // Takes user to the account selected on individual accounts screen.
+        fun takeUserToIndividualAccount(position: Int) {
+                val intent = Intent(mContext, IndividualAccountActivity::class.java)
+                intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
+                intent.putExtra(PRODUCT_RESPONSE_KEY, products[position])
+                intent.putExtra(AUTH_TOKEN_KEY, authToken)
+                mContext.startActivityForResult(intent, PASS_BACK_MONEYBOX_RESULT)
+        }
+
         override fun getItemCount() = products.size
 }

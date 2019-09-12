@@ -64,10 +64,16 @@ class IndividualAccountActivity : AppCompatActivity(){
 
     }
 
-
+    override fun onBackPressed() {
+        super.onBackPressed()
+      /*  intent.putExtra("Moneybox", moneyBoxValue.text.toString())
+        intent.putExtra("")
+        setResult(RESULT_OK, intent);
+        finish()*/
+    }
 
     private fun doTopUp() {
-        val observable = MoneyBoxApiService.topUpApiCall().topUp(intent.getStringExtra(AUTH_TOKEN_KEY), TopUpRequest(FIXED_TOP_UP_AMOUNT, account?.product?.id))
+        val observable = MoneyBoxApiService.topUpApiCall().topUp(intent.getStringExtra(AUTH_TOKEN_KEY), TopUpRequest(FIXED_TOP_UP_AMOUNT, account?.id))
         observable.subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({ topUpResponse: TopUpResponse ->

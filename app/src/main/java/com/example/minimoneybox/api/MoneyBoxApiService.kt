@@ -56,6 +56,10 @@ object MoneyBoxApiService {
         .create(TopUpApiService::class.java)!!
 
 
+    /*
+        Logs in user based on credentials. If this succeeds, the user can get the investor account
+        information. Otherwise, stay on the log in screen.
+     */
     fun loginUser(context: Context, loginRequest: LoginRequest) {
 
         val observable = MoneyBoxApiService.loginApiCall().loginUser(loginRequest)
@@ -74,19 +78,25 @@ object MoneyBoxApiService {
                     Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
                 }
             }, { error ->
-
                 val msg = "Failed to log in " + loginRequest.idfa
                 Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
             })
 
     }
 
+    /* Stores auth token download time stamp. Is used so the app knows when to go back to log in
+     screen after app closes
+     */
     private fun storeAuthTimeStamp(context: Context) {
         context.getSharedPreferences(Constants.SP_STORAGE, Context.MODE_PRIVATE).edit().putLong(
             Constants.AUTH_TOKEN_TIME_STAMP, System.currentTimeMillis()).commit()
     }
 
-
+    /*
+        Gets investor account info and then takes user to accounts screen to present information if there is
+        some data there. Shows Toast otherwise. If user can't get information, it probably means that the
+        auth token has expired.
+     */
     private fun loadInvestorData(context: Context, authToken : String, loginRequest: LoginRequest) {
         val observable = MoneyBoxApiService.investorApiCall().getInvestorProducts(authToken)
         observable.subscribeOn(Schedulers.io())
@@ -99,10 +109,15 @@ object MoneyBoxApiService {
                     Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
                 }
             }, { error ->
+
             })
 
     }
 
+    /*
+    Takes user to there accounts screen using intent, passing through credentials and investor account info
+    as extras.
+     */
     private fun goToUserAccounts(context: Context, authToken : String, loginRequest: LoginRequest, investorResponse: InvestorResponse) {
         val intent = Intent(context, UserAccountsActivity::class.java)
         intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
@@ -121,14 +136,14 @@ object MoneyBoxApiService {
         @Throws(NoSuchAlgorithmException::class, KeyManagementException::class)
         get() {
             if (mClient == null) {
-                val interceptor = HttpLoggingInterceptor()
-                interceptor.level = HttpLoggingInterceptor.Level.BODY
+              //  val interceptor = HttpLoggingInterceptor()
+               // interceptor.level = HttpLoggingInterceptor.Level.BODY
 
                 val httpBuilder = OkHttpClient.Builder()
                 httpBuilder
                     .connectTimeout(15, TimeUnit.SECONDS)
                     .readTimeout(20, TimeUnit.SECONDS)
-                    .addInterceptor(interceptor)  /// show all JSON in logCat
+                   // .addInterceptor(interceptor)  /// show all JSON in logCat
                 mClient = httpBuilder.build()
 
             }
